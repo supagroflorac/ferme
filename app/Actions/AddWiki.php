@@ -28,14 +28,16 @@ class AddWiki extends Action
         }
 
         if ($this->isValidWikiName($this->post['wikiName'])) {
-            throw new \Exception("Ce nom n'est pas valide : "
+            $this->ferme->alerts->add("Ce nom n'est pas valide : "
                 . "longueur entre 1 et 20 caractères, uniquement les lettres de 'A' à 'Z' "
-                . "(minuscules ou majuscules), chiffres de '0' à '9', "
-                . "et caractères spéciaux '_' et '-'.", 1);
+                . "(minuscules ou majuscules), chiffres de 0 à 9 "
+                . "(pas d'espaces ou de tirets)", 1);
+            return;
         }
 
         if (!filter_var($this->post['mail'], FILTER_VALIDATE_EMAIL)) {
-            throw new \Exception("Cet email n'est pas valide.", 1);
+            $this->ferme->alerts->add("Cet email n'est pas valide.", 1);
+            return;
         }
 
         try {
