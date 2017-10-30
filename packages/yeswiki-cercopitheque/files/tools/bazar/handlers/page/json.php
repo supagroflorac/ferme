@@ -48,12 +48,13 @@ if (isset($_REQUEST['demand'])) {
 
     // preparation des parametres passés
     $page = (isset($_REQUEST['page']) ? $_REQUEST['page'] : '');
-    $form = (isset($_REQUEST['form']) ? $_REQUEST['form'] : '');
+    $form = (isset($_REQUEST['id']) ? $_REQUEST['id'] : (isset($_REQUEST['form']) ? $_REQUEST['form'] : ''));
     $tags = (isset($_REQUEST['tags']) ? $_REQUEST['tags'] : '');
     $order = (isset($_REQUEST['order']) ? $_REQUEST['order'] : 'alphabetique');
     $html = (isset($_REQUEST['html']) && $_REQUEST['html'] == '1' ? $_REQUEST['html'] : '');
     $list = (isset($_REQUEST['list']) ? $_REQUEST['list'] : '');
     $idfiche = (isset($_REQUEST['id_fiche']) ? $_REQUEST['id_fiche'] : '');
+    $pagetag = (isset($_REQUEST['pagetag']) ? $_REQUEST['pagetag'] : '');
     //on recupere les parametres query pour une requete specifique
     $query = (isset($_REQUEST['query']) ? $_REQUEST['query'] : '');
     if (!empty($query)) {
@@ -251,11 +252,33 @@ if (isset($_REQUEST['demand'])) {
             }
 
             usort($formval, 'sortByLabel');
-            echo json_encode($formval);
+            echo json_encode(_convert($formval, 'UTF-8'));
             break;
         case "entries":
             // liste de fiches bazar
-            $results = baz_requete_recherche_fiches($tabquery, $order, $form, '', 1, '', '');
+
+            // chaine de recherche
+            $q = '';
+            if (isset($_GET['q']) and !empty($_GET['q'])) {
+                $q = $_GET['q'];
+            }
+
+            // TODO : gerer les queries
+            $query = '';
+
+            //on recupere toutes les fiches du type choisi et on les met au format csv
+            $results = baz_requete_recherche_fiches(
+                $tabquery,
+                $order,
+                $form,
+                '',
+                1,
+                '',
+                '',
+                true,
+                $q
+            );
+
             foreach ($results as $wikipage) {
                 $decoded_entry = json_decode($wikipage['body'], true);
                  //json = norme d'ecriture utilisée pour les fiches bazar (en utf8)
@@ -270,7 +293,7 @@ if (isset($_REQUEST['demand'])) {
                         }
                     }
                 }
-                $tab_entries[$decoded_entry['id_fiche']] = $decoded_entry;
+                $tab_entries[$decoded_entry['id_fiche']] = array_map('strval',$decoded_entry);
             }
             ksort($tab_entries);
             echo json_encode($tab_entries);

@@ -18,23 +18,30 @@ if ($type == 'fiche_bazar') {
     // si le parametre id est passé, on souhaite afficher une liste bazar
     // TODO : factoriser avec bazarliste?
     // on compte le nombre de fois que l'action bazarliste est appelée afin de différencier les instances
-    if (!isset($GLOBALS['nbbazarliste'])) {
-        $GLOBALS['nbbazarliste'] = 0;
+    if (!isset($GLOBALS['_BAZAR_']['nbbazarliste'])) {
+        $GLOBALS['_BAZAR_']['nbbazarliste'] = 0;
     }
-    ++$GLOBALS['nbbazarliste'];
+    ++$GLOBALS['_BAZAR_']['nbbazarliste'];
     // Recuperation de tous les parametres
     $params = getAllParameters($this);
+
+    // chaine de recherche
+    $q = '';
+    if (isset($_GET['q']) and !empty($_GET['q'])) {
+        $q = $_GET['q'];
+    }
+
     // tableau des fiches correspondantes aux critères
     if (is_array($params['idtypeannonce'])) {
         $results = array();
         foreach ($params['idtypeannonce'] as $formid) {
             $results = array_merge(
                 $results,
-                baz_requete_recherche_fiches($params['query'], 'alphabetique', $formid, '', 1, '', '', true, '')
+                baz_requete_recherche_fiches($params['query'], 'alphabetique', $formid, '', 1, '', '', true, $q)
             );
         }
     } else {
-        $results = baz_requete_recherche_fiches($params['query'], 'alphabetique', $params['idtypeannonce'], '', 1, '', '', true, '');
+        $results = baz_requete_recherche_fiches($params['query'], 'alphabetique', $params['idtypeannonce'], '', 1, '', '', true, $q);
     }
 
     // affichage à l'écran

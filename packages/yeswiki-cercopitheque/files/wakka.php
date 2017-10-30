@@ -43,13 +43,17 @@
 // do not change this line, you fool. In fact, don't change anything! Ever!
 define('WAKKA_VERSION', '0.1.1');
 define('WIKINI_VERSION', '0.5.0');
-define("YESWIKI_VERSION", 'Cercopitheque');
-define("YESWIKI_RELEASE", '2016.07.28');
+define("YESWIKI_VERSION", 'cercopitheque');
+define("YESWIKI_RELEASE", '2016-01-25-1');
+
+// A decommenter pour afficher les erreurs
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 require_once 'includes/constants.php';
 include_once 'includes/urlutils.inc.php';
 include_once 'includes/i18n.inc.php';
-// error_reporting(E_ALL);
 
 define('T_START', microtime(true));
 
@@ -105,6 +109,8 @@ class Wiki
                 @mysqli_close($this->dblink);
                 $this->dblink = false;
             }
+            // necessaire pour les versions de mysql qui sont en utf8 par defaut
+            mysqli_set_charset($this->dblink, "latin1");
         }
         $this->VERSION = WAKKA_VERSION;
 
@@ -1665,7 +1671,7 @@ class Wiki
             $tag = $this->GetPageTag();
         }
         if ($page = $this->LoadPage($tag, $time)) {
-            return $page["owner"];
+            return isset($page["owner"]) ? $page["owner"] : null;
         }
     }
 
@@ -1894,7 +1900,7 @@ class Wiki
 
     /**
      * Loads the module (handlers) ACL for a certain module.
-     * 
+     *
      * Database example row :
      *  resource = http://www.wikini.net/_vocabulary/handler/addcomment
      *  property = 'http://www.wikini.net/_vocabulary/acls'
