@@ -171,7 +171,7 @@ class Wiki implements InterfaceObject
     {
         // Supprime les fichiers du wiki
         $fileToIgnore = array(
-            '.', '..', 'wakka.config.php', 'wakka.infos.php', 'files'
+            '.', '..', 'wakka.config.php', 'wakka.infos.php', 'files', 'themes'
         );
 
         if ($res = opendir($this->path)) {
@@ -255,5 +255,4 @@ class Wiki implements InterfaceObject
         );
         return $this->infos;
     }
-
 }
