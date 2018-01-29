@@ -6,7 +6,7 @@ Installation automatisée de wikis ([YesWiki](https://yeswiki.net)) et interface
 
 Nécessite *git*, *curl* et *composer*
 ```bash
-curl -L https://gist.githubusercontent.com/daiko/6bcb701890d90e336c1fadd8470a20e8/raw/d99cd72443a37f6ce6f870e8eace8fe38171fbee/build_ferme.sh | bash
+source <(curl -L https://gist.githubusercontent.com/daiko/6bcb701890d90e336c1fadd8470a20e8/raw/f0617cbd8ba3e036f0073c8ab13520e98a27d321/build_ferme.sh)
 ```
 
 ## Installation
