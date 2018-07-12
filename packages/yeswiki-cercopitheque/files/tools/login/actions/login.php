@@ -70,7 +70,8 @@ $profileurl = $this->GetParameter('profileurl');
 // sauvegarde de l'url d'ou on vient
 $incomingurl = $this->GetParameter('incomingurl');
 if (empty($incomingurl)) {
-    $incomingurl = 'http'.((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+    $incomingurl = $this->getBaseUrl()
+      .str_replace(dirname($_SERVER['REQUEST_URI']), '', $_SERVER['REQUEST_URI']);
 }
 
 $userpage = $this->GetParameter("userpage");
@@ -214,7 +215,7 @@ if ($user = $this->GetUser()) {
 // on affiche le template
 //
 
-include_once('tools/libs/squelettephp.class.php');
+include_once('includes/squelettephp.class.php');
 
 // on cherche un template personnalise dans le repertoire themes/tools/bazar/templates
 $templatetoload = 'themes/tools/login/templates/' . $template;

@@ -5,7 +5,7 @@ if (!defined("WIKINI_VERSION")) {
 
 // classe css supplémentaire
 $class = $this->GetParameter('class');
-$class = 'row-fluid row'.((!empty($class)) ? ' '.$class : '');
+$class = ((!empty($class)) ? ' '.$class : '');
 // data attributes
 $data = getDataParameter();
 $pagetag = $this->GetPageTag();
@@ -19,7 +19,7 @@ if ($GLOBALS['check_'.$pagetag]['accordion']) {
     $accordionID = uniqid('accordion_');
     $GLOBALS['check_'.$pagetag ]['accordion_uniqueID'] = $accordionID;
 
-    $data = "";
+    $data = '';
     if (is_array($data)) {
         foreach ($data as $key => $value) {
             $data .= ' data-'.$key.'="'.$value.'"';

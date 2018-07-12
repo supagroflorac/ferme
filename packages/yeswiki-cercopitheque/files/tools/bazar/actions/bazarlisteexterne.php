@@ -26,6 +26,7 @@ if (empty($url)) {
     exit('<div class="alert alert-danger">Action bazarlisteexterne : parametre url obligatoire.</div>');
 }
 $arr = explode("/wakka.php", $url, 2);
+$arr = explode("/?", $arr[0], 2);
 $url = $arr[0];
 
 // Recuperation de tous les parametres
@@ -50,21 +51,41 @@ if (is_array($params['idtypeannonce'])) {
         // requete pour obtenir le formulaire et les listes
         if (!isset($form[$formid])) {
             $json = getCachedUrlContent($url.'/wakka.php?wiki=BazaR/json&demand=forms');
-            $form = $form + json_decode($json, true);
+            $jsonc = json_decode($json, true);
+            if ($jsonc) {
+                $form = $form + $jsonc;
+            } else {
+                echo '<div class="alert alert-danger">Erreur bazarlisteexterne : contenu des formulaires mal formaté.</div>';
+                return;
+            }
         }
 
         // requete pour obtenir les fiches
         $json = getCachedUrlContent($url.'/wakka.php?wiki=BazaR/json&demand=entries&form='.$formid.$querystring);
         $results = json_decode($json, true);
+        if (!$results) {
+            echo '<div class="alert alert-danger">Erreur bazarlisteexterne : contenu des fiches multiformualire  mal formaté.</div>';
+            return;
+        }
     }
 } else {
     // requete pour obtenir le formulaire et les listes
     if (!isset($form[$formid])) {
         $json = getCachedUrlContent($url.'/wakka.php?wiki=BazaR/json&demand=forms');
-        $form = $form + json_decode($json, true);
+        $jsonc = json_decode($json, true);
+        if ($jsonc) {
+            $form = $form + $jsonc;
+        } else {
+            echo '<div class="alert alert-danger">Erreur bazarlisteexterne : contenu des formulaires mal formaté.</div>';
+            return;
+        }
     }
     $json = getCachedUrlContent($url.'/wakka.php?wiki=BazaR/json&demand=entries&form='.$formid.$querystring);
     $results = json_decode($json, true);
+    if (!$results) {
+        echo '<div class="alert alert-danger">Erreur bazarlisteexterne : contenu des fiches mal formaté.</div>';
+        return;
+    }
 }
 
 // affichage à l'écran

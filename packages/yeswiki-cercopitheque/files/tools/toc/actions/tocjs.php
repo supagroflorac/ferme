@@ -22,41 +22,43 @@ if (empty($size)) {
 $contentsize = 12 - intval($size);
 
 $script = '
-var align = "'.$align.'";
-var page = $(".page:first");
-var bootstrap3_enabled = (typeof $().emulateTransitionEnd == \'function\');
-if (bootstrap3_enabled) {
-    var rowclass=\'row\';
-    var colclass=\'col-sm-\';
-} else {
-    var rowclass=\'row-fluid\';
-    var colclass=\'span\';
-}
-if (align === "left") {
-    page.addClass(colclass+"'.$contentsize.'").wrap( "<div class=\'"+rowclass+"\'></div>" ).parent().prepend( "<div class=\'"+colclass+"'.$size.' no-dblclick\'><div id=\'tocjs-'.$tag.'\' class=\'bs-sidebar hidden-print\' role=\'complementary\'></div></div>" );
-}
-else {
-    page.addClass(colclass+"'.$contentsize.'").wrap( "<div class=\'"+rowclass+"\'></div>" ).parent().append( "<div class=\'"+colclass+"'.$size.' no-dblclick\'><div id=\'tocjs-'.$tag.'\' class=\'bs-sidebar hidden-print\' role=\'complementary\'></div></div>" );
-}
-$.gajus
-    .contents({
+$(document).ready(function () {
+    var align = "'.$align.'";
+    var page = $(".page:first");
+    var bootstrap3_enabled = (typeof $().emulateTransitionEnd == \'function\');
+    if (bootstrap3_enabled) {
+        var rowclass=\'row\';
+        var colclass=\'col-sm-\';
+    } else {
+        var rowclass=\'row-fluid\';
+        var colclass=\'span\';
+    }
+    if (align === "left") {
+        page.addClass(colclass+"'.$contentsize.'").wrap( "<div class=\'"+rowclass+"\'></div>" ).parent().prepend( "<div class=\'"+colclass+"'.$size.' no-dblclick\'><div id=\'tocjs-'.$tag.'\' class=\'bs-sidebar hidden-print\' role=\'complementary\'></div></div>" );
+    }
+    else {
+        page.addClass(colclass+"'.$contentsize.'").wrap( "<div class=\'"+rowclass+"\'></div>" ).parent().append( "<div class=\'"+colclass+"'.$size.' no-dblclick\'><div id=\'tocjs-'.$tag.'\' class=\'bs-sidebar hidden-print\' role=\'complementary\'></div></div>" );
+    }
+    $.gajus.contents({
         where: $(\'#tocjs-'.$tag.'\'),
         index: $(\'.page h1, .page h2, .page h3, .page h4, .page h5\')
     }).on(\'change.contents.gajus\', function (event, change) {
         if (change.previous) {
-            //change.previous.heading.removeClass(\'active\');
             change.previous.anchor.removeClass(\'active\').parents(\'li\').removeClass(\'active\');
         }
-
-        //change.current.heading.addClass(\'active\');
         change.current.anchor.addClass(\'active\').parents(\'li\').addClass(\'active\');
     });
 
     var $window = $(window)
     var $body = $(document.body)
-    var pagestartHeight = page.offset().top;
-    console.log(\'pagestartHeight\', pagestartHeight);
+    var navbarheight = $(\'#yw-topnav\').height();
+    var pagestartHeight = page.offset().top - navbarheight;
     var $sideBar = $(\'#tocjs-'.$tag.'\');
+
+    var pagetitles = $body.find(\'.page h1, .page h2, .page h3, .page h4, .page h5\');
+    pagetitles.each(function(i) {
+        $(this).html($(this).text());
+    });
 
     $body.scrollspy({
         target: \'#tocjs-'.$tag.'\',
@@ -67,7 +69,7 @@ $.gajus
         e.preventDefault();
 
         var link = $(this).attr(\'href\');
-        
+
         $(\'html, body\').animate({
             scrollTop: $(link).offset().top - '.$offset.'
         }, 500);
@@ -93,11 +95,10 @@ $.gajus
             }
         })
         $sideBar.on(\'affixed.bs.affix\', function (e) {
-            //console.log($sideBar.css(\'width\'));
-          $sideBar.css(\'top\', pagestartHeight);
+        $sideBar.css(\'top\', navbarheight + 20);
         })
         $sideBar.on(\'affix-top.bs.affix\', function (e) {
-          $sideBar.css(\'top\', 0);
+        $sideBar.css(\'top\', 0);
         })
 
 
@@ -110,7 +111,7 @@ $.gajus
             $sideBar.affix(\'checkPosition\')
         }, 100);
     });
-';
+});';
 $this->AddJavascriptFile('tools/toc/libs/vendor/contents.min.js');
 $this->AddJavascript($script);
 echo '<style>
@@ -149,7 +150,7 @@ echo '<style>
         display: none;
         margin-bottom: 8px;
     }
-    #tocjs-'.$tag.' .active ol {
+    #tocjs-'.$tag.' .active > ol {
         display: block;
     }
     #tocjs-'.$tag.' ol ol > li > a {

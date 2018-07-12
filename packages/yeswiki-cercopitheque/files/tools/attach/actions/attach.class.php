@@ -57,6 +57,7 @@ if (!class_exists('attach')) {
         public $attachErr = ''; //message d'erreur
         public $pageId = 0; //identifiant de la page
         public $isSafeMode = true; //indicateur du safe mode de PHP
+        public $data = ''; //indicateur du safe mode de PHP
         /**
          * Constructeur. Met les valeurs par defaut aux parametres de configuration
          */
@@ -102,9 +103,9 @@ if (!class_exists('attach')) {
             }
 
             if (empty($this->attachConfig['max_file_size'])) {
-                $this->attachConfig['max_file_size'] = 1024 * 8000;
+                $this->attachConfig['max_file_size'] = $this->wiki->GetConfigValue("max_file_size") ? $this->wiki->GetConfigValue("max_file_size") : $this->file_upload_max_size();
             }
-            //8000ko max
+
             if (empty($this->attachConfig['fmDelete_symbole'])) {
                 $this->attachConfig['fmDelete_symbole'] = 'Supr';
             }
@@ -134,6 +135,47 @@ if (!class_exists('attach')) {
 /******************************************************************************
  *    FONCTIONS UTILES
  *******************************************************************************/
+        // Returns a file size limit in bytes based on the PHP upload_max_filesize
+        // and post_max_size
+        public function file_upload_max_size()
+        {
+            static $max_size = -1;
+        
+            if ($max_size < 0) {
+            // Start with post_max_size.
+            $post_max_size = $this->parse_size(ini_get('post_max_size'));
+            if ($post_max_size > 0) {
+                $max_size = $post_max_size;
+            }
+        
+            // If upload_max_size is less, then reduce. Except if upload_max_size is
+            // zero, which indicates no limit.
+            $upload_max = $this->parse_size(ini_get('upload_max_filesize'));
+            if ($upload_max > 0 && $upload_max < $max_size) {
+                $max_size = $upload_max;
+            }
+            }
+            return $max_size;
+        }
+        /**
+         * transforme des valeurs en mega / kilo / giga octets en entier
+         *
+         * @param string $size la taille
+         * @return int 
+         */
+        public function parse_size($size)
+        {
+            $unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
+            $size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
+            if ($unit) {
+            // Find the position of the unit in the ordered string which is the power of magnitude to multiply a kilobyte by.
+            return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
+            }
+            else {
+            return round($size);
+            }
+        }
+
         /**
          * Cr&eacute;ation d'une suite de r&eacute;pertoires r&eacute;cursivement
          */
@@ -156,17 +198,18 @@ if (!class_exists('attach')) {
          */
         public function GetScriptPath()
         {
-            if (preg_match("/.(php)$/i", $_SERVER["PHP_SELF"])) {
-                $a = explode('/', $_SERVER["PHP_SELF"]);
-                $a[count($a) - 1] = '';
-                $path = implode('/', $a);
-            } else {
-                $path = $_SERVER["PHP_SELF"];
-            }
-            $http = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://');
-            return !empty($_SERVER["HTTP_HOST"]) ?
-                $http . $_SERVER["HTTP_HOST"] . $path
-                : $http . $_SERVER["SERVER_NAME"] . $path;
+            return $this->wiki->getBaseUrl().'/';
+            // if (preg_match("/.(php)$/i", $_SERVER["PHP_SELF"])) {
+            //     $a = explode('/', $_SERVER["PHP_SELF"]);
+            //     $a[count($a) - 1] = '';
+            //     $path = implode('/', $a);
+            // } else {
+            //     $path = $_SERVER["PHP_SELF"];
+            // }
+            // $http = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://');
+            // return !empty($_SERVER["HTTP_HOST"]) ?
+            //     $http . $_SERVER["HTTP_HOST"] . $path
+            //     : $http . $_SERVER["SERVER_NAME"] . $path;
         }
         /**
          * Calcul le repertoire d'upload en fonction du safe_mode
@@ -386,6 +429,7 @@ if (!class_exists('attach')) {
             $this->nofullimagelink = $this->wiki->GetParameter("nofullimagelink");
             $this->height = $this->wiki->GetParameter('height');
             $this->width = $this->wiki->GetParameter('width');
+            $this->data = getDataParameter();
 
             //test de validit&eacute; des parametres
             if (empty($this->file)) {
@@ -462,9 +506,9 @@ if (!class_exists('attach')) {
                 $width = $width - 20;
                 $height = $height - 20;
             }
-
+            
             //c'est une image : balise <IMG..../>
-            $img = "<img src=\"" . $this->GetScriptPath() . $img_name . "\" " .
+            $img = "<img class=\"img-responsive\" src=\"" . $this->GetScriptPath() . $img_name . "\" " .
             "alt=\"" . $this->desc . ($this->link ? "\nLien vers: $this->link" : "") . "\" width=\"" . $width . "\" height=\"" . $height . "\" />";
             //test si c'est une image sensible
             if (!empty($this->link)) {
@@ -490,7 +534,13 @@ if (!class_exists('attach')) {
             if (!empty($this->legend)) {
                 $output .= '<div class="legend">' . $this->legend . '</div>';
             }
-            $output = "<figure class=\"$this->classes\">$output</figure>";
+            $data = '';
+            if (is_array($this->data)) {
+                foreach ($this->data as $key => $value) {
+                    $data .= ' data-'.$key.'="'.$value.'"';
+                }
+            }
+            $output = "<figure class=\"$this->classes\" $data>$output</figure>";
 
             echo $output;
             //$this->showUpdateLink();

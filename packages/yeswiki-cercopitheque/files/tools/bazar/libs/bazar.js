@@ -152,6 +152,7 @@ $(document).ready(function () {
     .not('#formulaire input.bazar-date[required=required]');
 
   $('#formulaire').submit(function(e) {
+    $(this).addClass('submitted');
     var atleastonefieldnotvalid = false;
     var atleastonemailfieldnotvalid = false;
     var atleastoneurlfieldnotvalid = false;
@@ -299,64 +300,65 @@ $(document).ready(function () {
   $('#formulaire').removeAttr('onsubmit');
 
   // selecteur de dates
-  var $dateinputs = $('input.bazar-date');
-  Modernizr.load([{
-    test: $dateinputs.length === 0,
-    nope: 'tools/bazar/libs/vendor/bootstrap-datepicker.js',
-    complete: function () {
-      if ($dateinputs.length > 0) {
-        $.fn.datepicker.dates.fr = {
-          days: [
-            'Dimanche',
-            'Lundi',
-            'Mardi',
-            'Mercredi',
-            'Jeudi',
-            'Vendredi',
-            'Samedi',
-            'Dimanche',
-          ],
-          daysShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
-          daysMin: ['D', 'L', 'Ma', 'Me', 'J', 'V', 'S', 'D'],
-          months: [
-            'Janvier',
-            'Février',
-            'Mars',
-            'Avril',
-            'Mai',
-            'Juin',
-            'Juillet',
-            'Août',
-            'Septembre',
-            'Octobre',
-            'Novembre',
-            'Décembre',
-          ],
-          monthsShort: [
-            'Jan',
-            'Fév',
-            'Mar',
-            'Avr',
-            'Mai',
-            'Jui',
-            'Jul',
-            'Aou',
-            'Sep',
-            'Oct',
-            'Nov',
-            'Déc',
-          ],
-        };
-        $dateinputs.datepicker({
-          format: 'yyyy-mm-dd',
-          weekStart: 1,
-          autoclose: true,
-          language: 'fr',
-        }).attr('autocomplete', 'off');
-      }
-    },
-  },
-  ]);
+  var $dateinputs = $('.bazar-date');
+
+  // test pour verifier si le browser gere l'affichage des dates
+  // var input = document.createElement('input');
+  // input.setAttribute('type','date');
+  // var notADateValue = 'not-a-date';
+  // input.setAttribute('value', notADateValue);
+
+  //if ($dateinputs.length > 0 && (input.value == notADateValue)) {
+  if ($dateinputs.length > 0) {
+    $.fn.datepicker.dates.fr = {
+      days: [
+        'Dimanche',
+        'Lundi',
+        'Mardi',
+        'Mercredi',
+        'Jeudi',
+        'Vendredi',
+        'Samedi',
+        'Dimanche',
+      ],
+      daysShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+      daysMin: ['D', 'L', 'Ma', 'Me', 'J', 'V', 'S', 'D'],
+      months: [
+        'Janvier',
+        'Février',
+        'Mars',
+        'Avril',
+        'Mai',
+        'Juin',
+        'Juillet',
+        'Août',
+        'Septembre',
+        'Octobre',
+        'Novembre',
+        'Décembre',
+      ],
+      monthsShort: [
+        'Jan',
+        'Fév',
+        'Mar',
+        'Avr',
+        'Mai',
+        'Jui',
+        'Jul',
+        'Aou',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Déc',
+      ],
+    };
+    $dateinputs.datepicker({
+      format: 'yyyy-mm-dd',
+      weekStart: 1,
+      autoclose: true,
+      language: 'fr',
+    }).attr('autocomplete', 'off');
+  }
 
   // Onglets
   // hack pour les fiches avec tabulations : on change les id pour qu'ils soient uniques
@@ -445,6 +447,7 @@ $(document).ready(function () {
       var urlquery;
       if (value !== '') {
         if (s !== '') {
+          //console.log(s);
           urlquery = decodeURIComponent(s).replace(
             new RegExp('&' + name + '=' + '([^&;]+?)(&|#|;|$)'),
             '&' + name + '=' + value
@@ -454,6 +457,7 @@ $(document).ready(function () {
           urlquery = '?' + name + '=' + value;
         } //console.log('location.search vide', s, urlquery);
       } else {
+        //console.log(s);
         urlquery = decodeURIComponent(s).replace(
           new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)'),
           ''
@@ -553,7 +557,7 @@ $(document).ready(function () {
           return tab.toArray().indexOf(n) != -1;
         });
       });
-
+      $('body').trigger( 'updatefilters', [ tabres ] );
       e.data.$entries.hide().filter(tabres).show();
       e.data.$entries.parent('.bazar-marker').hide();
       e.data.$entries.filter(tabres).parent('.bazar-marker').show();
@@ -578,7 +582,10 @@ $(document).ready(function () {
       $entries: $('.bazar-entry', $container),
     };
     $filters.on('click', data, updateFilters);
-    jQuery(window).on('load', data, updateFilters);
+    jQuery(window).ready(function(e) {
+      e.data = data;
+      updateFilters(e);
+    });
   });
 
   // gestion de l'historique : on reapplique les filtres

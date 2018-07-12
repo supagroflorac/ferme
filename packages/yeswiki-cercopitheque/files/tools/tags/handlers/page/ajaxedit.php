@@ -69,7 +69,7 @@ if (isset($_GET['jsonp_callback']))
 				if ($this->page && $this->page['id'] != $_GET['previous'])	{
 					$error = _t('TAGS_ALERT_PAGE_ALREADY_MODIFIED');
 				} else { // store
-					$body = str_replace("\r", '', utf8_decode($body));
+					$body = str_replace("\r", '', $body);
 					
 					// teste si la nouvelle page est differente de la précédente 
 					if(rtrim($body)==rtrim($this->page["body"])) {
@@ -105,7 +105,7 @@ if (isset($_GET['jsonp_callback']))
 						$valcomment['commentaires'][0]['hasrighttomodifycomment'] = $this->HasAccess('write', $comment['tag']) || $this->UserIsOwner($comment['tag']) || $this->UserIsAdmin();
 						$valcomment['commentaires'][0]['hasrighttodeletecomment'] = $this->UserIsOwner($comment['tag']) || $this->UserIsAdmin();
 						$valcomment['commentaires'][0]['replies'] = '';
-						include_once('tools/libs/squelettephp.class.php');
+						include_once('includes/squelettephp.class.php');
 						$squelcomment = new SquelettePhp('tools/tags/presentation/templates/comment_list.tpl.html');
 						$squelcomment->set($valcomment);
 						echo $_GET['jsonp_callback']."(".json_encode(array("html"=>utf8_encode($squelcomment->analyser()))).")";
