@@ -22,12 +22,12 @@ $listQuery = array(
       `page_tag` varchar(50) NOT NULL DEFAULT '',
       `privilege` varchar(20) NOT NULL DEFAULT '',
       `list` text NOT NULL
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;",
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;",
 
     "CREATE TABLE `" . $tablePrefix . "links` (
       `from_tag` char(50) NOT NULL DEFAULT '',
       `to_tag` char(50) NOT NULL DEFAULT ''
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;",
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;",
 
     "INSERT INTO `" . $tablePrefix . "links` (`from_tag`, `to_tag`) VALUES
     ('AidE', 'AidE'),
@@ -190,7 +190,7 @@ $listQuery = array(
       `bn_ce_i18n` varchar(5) NOT NULL DEFAULT '',
       `bn_type_fiche` varchar(255) NOT NULL,
       `bn_label_class` varchar(255) NOT NULL
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;",
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;",
 
     "CREATE TABLE `" . $tablePrefix . "pages` (
       `id` int(10) UNSIGNED NOT NULL,
@@ -203,7 +203,7 @@ $listQuery = array(
       `latest` enum('Y','N') NOT NULL DEFAULT 'N',
       `handler` varchar(30) NOT NULL DEFAULT 'page',
       `comment_on` varchar(50) NOT NULL DEFAULT ''
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;",
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;",
 
     "INSERT INTO `" . $tablePrefix . "pages` (`id`, `tag`, `time`, `body`, `body_r`, `owner`, `user`, `latest`, `handler`, `comment_on`) VALUES
     (1, 'WikiAdmin', '" . $date . "', '{{grid}}\n{{col size=\"6\"}}\n===Gérer les menus de ce wiki===\n - [[PageMenuHaut Editer menu horizontal d\'en haut]]\n - [[PageTitre Editer le titre]]\n - [[PageRapideHaut Editer le menu roue crantée]]\n - [[PageHeader Editer le bandeau]]\n - [[PageFooter Editer le footer]]\n------\n===Gérer les droits des pages===\n{{gererdroits}}\n------\n===Gérer les thèmes des pages===\n{{gererthemes}}\n------\n{{end elem=\"col\"}}\n{{col size=\"6\"}}\n===Gérer les groupes d\'utilisateurs===\nnécessite une connexion admin\n{{editgroups}}\n------\n===Gestion des tags ===\n{{admintag}}\n------\n===Gestion des commentaires ===\n{{erasespamedcomments}}\n------\n{{end elem=\"col\"}}\n{{end elem=\"grid\"}}\n', '', 'WikiAdmin', 'WikiAdmin', 'Y', 'page', ''),
@@ -232,17 +232,17 @@ $listQuery = array(
       `page_tag` char(50) NOT NULL DEFAULT '',
       `referrer` char(150) NOT NULL DEFAULT '',
       `time` datetime NOT NULL
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;",
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;",
 
     "INSERT INTO `" . $tablePrefix . "referrers` (`page_tag`, `referrer`, `time`) VALUES
     ('PagePrincipale', 'http://florestan.cdrflorac.fr/', '" . $date . "');",
 
     "CREATE TABLE `" . $tablePrefix . "triples` (
       `id` int(10) UNSIGNED NOT NULL,
-      `resource` varchar(255) NOT NULL DEFAULT '',
-      `property` varchar(255) NOT NULL DEFAULT '',
+      `resource` varchar(191) NOT NULL DEFAULT '',
+      `property` varchar(191) NOT NULL DEFAULT '',
       `value` text NOT NULL
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;",
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;",
 
     "INSERT INTO `" . $tablePrefix . "triples` (`id`, `resource`, `property`, `value`) VALUES
     (1, 'ThisWikiGroup:admins', 'http://www.wikini.net/_vocabulary/acls', 'WikiAdmin');",
@@ -257,7 +257,7 @@ $listQuery = array(
       `doubleclickedit` enum('Y','N') NOT NULL DEFAULT 'Y',
       `signuptime` datetime NOT NULL,
       `show_comments` enum('Y','N') NOT NULL DEFAULT 'N'
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;",
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;",
 
     "INSERT INTO `" . $tablePrefix . "users` (`name`, `password`, `email`, `motto`, `revisioncount`, `changescount`, `doubleclickedit`, `signuptime`, `show_comments`) VALUES
     ('WikiAdmin', '" . $WikiAdminPasswordMD5 . "', 'contact@cdrflorac.fr', '', 20, 50, 'Y', '" . $date . "', 'N');",
