@@ -123,7 +123,7 @@ class Wiki implements InterfaceObject
         $archiveFilename = $this->fermeConfig['archives_path']
             . $wikiName
             . date("YmdHi")
-            . '.tgz';
+            . '.zip';
         $wikiPath = realpath($this->fermeConfig['ferme_path'] . $wikiName);
         $sqlFile = $this->fermeConfig['tmp_path'] . $wikiName . '.sql';
 
@@ -132,17 +132,28 @@ class Wiki implements InterfaceObject
         $database->export($sqlFile, $this->config['table_prefix']);
 
         // Création de l'archive
-        $archive = new \PharData($archiveFilename);
+        $archive = new \ZipArchive();
 
-        $iterator = new \RecursiveIteratorIterator(
+        $files = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator(
                 $wikiPath,
                 \RecursiveDirectoryIterator::SKIP_DOTS // Evite les repertoire .. et .
             )
         );
 
-        $archive->buildFromIterator($iterator, dirname($wikiPath));
+        if ($archive->open($archiveFilename, \ZipArchive::CREATE) !== true) {
+            throw new \Exception(
+                "Erreur lors de la création de : \"$archiveFilename\".",
+                1
+            );
+        }
+        $prefix_length = strlen(realpath($this->fermeConfig['ferme_path'])) + 1;
+        foreach ($files as $key => $file) {
+            $fileToAdd = substr($file, $prefix_length);
+            $archive->addFile($file, $fileToAdd);
+        }
         $archive->addFile($sqlFile, basename($sqlFile));
+        $archive->close();
 
         unset($archive);
         unlink($sqlFile);

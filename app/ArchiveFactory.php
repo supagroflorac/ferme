@@ -15,7 +15,21 @@ class ArchiveFactory {
 
     public function createFromExisting($filename)
     {
-        $archive = new Archive($filename, $this->config);
+        $fileType = substr($filename, -3);
+        if ($fileType === "tgz") {
+            $archive = new ArchiveTgz($filename, $this->config);
+        }
+
+        if ($fileType === "zip") {
+            $archive = new ArchiveZip($filename, $this->config);
+        }
+
+        if (!isset($archive)) {
+          throw new \Exception("Type d'archive none reconnu : $filename", 1);
+        }
+
         return $archive;
     }
+
+
 }

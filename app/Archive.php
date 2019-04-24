@@ -63,9 +63,7 @@ class Archive implements InterfaceObject
      ************************************************************************/
     public function delete()
     {
-        if (!unlink(
-            $this->config['archives_path'] . $this->filename
-        )) {
+        if (unlink($this->config['archives_path'] . $this->filename) === false) {
             throw new \Exception('Impossible de supprimer l\'archive', 1);
         }
     }

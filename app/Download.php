@@ -8,7 +8,7 @@ class Download
 
     public function __construct($name, $ferme)
     {
-        $this->name = $name . '.tgz';
+        $this->name = $name . '.zip';
         $this->path = $ferme->config['archives_path'];
 
         if (!file_exists($this->path . $this->name)) {
@@ -19,7 +19,7 @@ class Download
     public function serve()
     {
         $file = $this->path . $this->name;
-        header('Content-type: application/tgz');
+        header('Content-type: application/zip');
         header('Content-Disposition: inline; filename="' . $this->name . '"');
         header('Content-Length: ' . filesize($file));
         readfile($file);

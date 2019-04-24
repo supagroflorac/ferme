@@ -22,8 +22,10 @@ class ArchivesCollection extends Collection
             \RecursiveDirectoryIterator::SKIP_DOTS
         );
         foreach ($archivesList as $archivePath) {
-            if ("tgz" === pathinfo($archivePath, PATHINFO_EXTENSION)
-                and is_file($archivePath)
+            if ((
+                  "zip" === pathinfo($archivePath, PATHINFO_EXTENSION)
+                  or "tgz" === pathinfo($archivePath, PATHINFO_EXTENSION)
+                ) and is_file($archivePath)
             ) {
                 $archive = $archiveFactory->createFromExisting(
                     basename($archivePath)

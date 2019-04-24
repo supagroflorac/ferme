@@ -41,7 +41,11 @@ class Wikifactory
 
     public function createFromArchive($archive)
     {
-        $wikiName = $this->installFromArchive($archive);
+        $wikiName = $archive->restore(
+            $this->fermeConfig['ferme_path'],
+            $this->fermeConfig['archives_path'],
+            $this->dbConnexion
+        );
         return $this->createWikiFromExisting($wikiName);
     }
 
@@ -88,26 +92,5 @@ class Wikifactory
                 );
             }
         }
-    }
-
-    /**
-     * install un wiki a partir d'une archive
-     */
-    private function installFromArchive($archive)
-    {
-        $name = substr($archive->filename, 0, -16);
-        $fermePath = realpath($this->fermeConfig['ferme_path']);
-        $sqlFile = $fermePath . '/' . $name . '.sql';
-
-        $archivePhar = new \PharData(
-            $this->fermeConfig['archives_path'] . $archive->filename
-        );
-        $archivePhar->extractTo($fermePath);
-
-        $database = new Database($this->dbConnexion);
-        $database->import($sqlFile);
-
-        unlink($sqlFile);
-        return $name;
     }
 }
