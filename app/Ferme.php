@@ -118,6 +118,12 @@ class Ferme
     {
         $this->users->isAuthorized();
         $archive = $this->archives[$name];
+        $wikiName = $archive->getInfos()['name'];
+
+        if ($this->wikis->exist($wikiName)) {
+          throw new \Exception("Un wiki de ce nom ($wikiName) existe déjà.");
+        }
+
         $this->log->write(
             $this->users->whoIsLogged(),
             "Restauration de l'archive '$name'"
