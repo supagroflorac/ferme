@@ -23,4 +23,4 @@ source <(curl -L https://gist.githubusercontent.com/daiko/6bcb701890d90e336c1fad
  * Copier le contenu de l'archive d'installation dans le dossier.
 
 ## Note
- * testé avec php 7.1
+ * testé avec php 7.3
