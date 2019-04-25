@@ -1,0 +1,39 @@
+<?php
+if(count($fiches)>0) : ?>
+    <?php echo $info_res;?>
+    <ul class="BAZ_liste <?php echo $param['class'];?>">
+    <?php
+    foreach($fiches as $fiche): ?>
+        <li class="bazar-entry" <?php echo $fiche['html_data'];?>>
+          <a href="<?php echo $GLOBALS['wiki']->href('', $fiche['id_fiche']); ?>" target="_blank">
+            <?php
+            $style = '';
+            $color = getCustomValueForEntry(
+              $param['color'],
+              $param['colorfield'],
+              $fiche,
+              ''
+            );
+            if (!empty($color)) {
+              echo '<span class="pellet" style="background-color:'.$color.';"></span> ';
+            }
+            $icon = getCustomValueForEntry(
+              $param['icon'],
+              $param['iconfield'],
+              $fiche,
+              ''
+            );
+            if (!empty($icon)) {
+              echo '<i class="'.$icon.'"></i> ';
+            }
+
+            echo '<span class="entry-title">'.$fiche['bf_titre'].'</span>';
+            ?>
+          </a>
+        </li>
+        <?php
+    endforeach; ?>
+    </ul>
+    <?php echo $pager_links;?>
+    <?php
+endif;

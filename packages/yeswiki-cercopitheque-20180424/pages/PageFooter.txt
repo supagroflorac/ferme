@@ -1,0 +1,3 @@
+{{section height="60" bgcolor="transparent" class="text-center"}}
+(>^_^)> Galope sous [[https://www.yeswiki.net YesWiki]] <(^_^<)
+{{end elem="section"}}

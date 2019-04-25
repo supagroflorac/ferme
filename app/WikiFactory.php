@@ -63,10 +63,7 @@ class Wikifactory
 
         // Vérifie si le wiki n'existe pas déjà
         if (is_dir($wikiPath) || is_file($wikiPath)) {
-            throw new \Exception(
-                "Ce nom de wiki est déjà utilisé (" . $wikiName . ")",
-                1
-            );
+            throw new \Exception("Ce nom de wiki est déjà utilisé (${wikiName})");
         }
 
         $wikiSrcFiles = new \Files\File($packagePath . "files");
@@ -84,12 +81,12 @@ class Wikifactory
         include $packagePath . "database.php";
 
         foreach ($listQuery as $query) {
-            $sth = $this->dbConnexion->prepare($query);
-            if (!$sth->execute()) {
-                throw new \Exception(
-                    "Erreur lors de la création de la base de donnée.",
-                    1
-                );
+            $sth = $this->dbConnexion->prepare($query['query']);
+            if (!$sth->execute($query['params'])) {
+                var_dump($listQuery);
+                var_dump($sth->errorInfo());
+                var_dump($query);
+                throw new \Exception("Erreur lors de la création de la base de donnée.");
             }
         }
     }
