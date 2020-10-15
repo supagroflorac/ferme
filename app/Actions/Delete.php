@@ -16,6 +16,13 @@ class Delete extends Action
         }
 
         try {
+            $this->ferme->archiveWiki($this->get['name']);
+        } catch (\Exception $e) {
+            $this->ferme->alerts->add($e->getMessage(), 'error');
+            return;
+        }
+
+        try {
             $this->ferme->delete($this->get['name']);
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');
@@ -23,7 +30,7 @@ class Delete extends Action
         }
 
         $this->ferme->alerts->add(
-            "Le wiki " . $this->get['name'] . " a été supprimée avec succès",
+            "Le wiki " . $this->get['name'] . " a été archivé puis supprimé avec succès",
             'success'
         );
     }
