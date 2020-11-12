@@ -5,9 +5,6 @@
 /.phpintel/*
 /archives/*
 /composer.lock
-/doc/*
-/ferme.sublime-project
-/ferme.sublime-workspace
 /vendor/
 /ferme.log
 /.vscode
