@@ -14,8 +14,8 @@ abstract class Mail
     public function send()
     {
         $themePath = 'themes/' . $this->config['template'] . '/mails/';
-        $twigLoader = new \Twig_Loader_Filesystem($themePath);
-        $twig = new \Twig_Environment($twigLoader);
+        $loader = new \Twig\Loader\FilesystemLoader($themePath);
+        $twig = new \Twig\Environment($loader);
         $data = $this->getData();
         $content = $twig->render($this->getTemplate(), $data);
 

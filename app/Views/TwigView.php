@@ -25,8 +25,8 @@ abstract class TwigView extends View
     public function __construct($ferme)
     {
         parent::__construct($ferme);
-        $twigLoader = new \Twig_Loader_Filesystem($this->getThemePath());
-        $this->twig = new \Twig_Environment($twigLoader);
+        $loader = new \Twig\Loader\FilesystemLoader($this->getThemePath());
+        $this->twig = new \Twig\Environment($loader);
     }
 
     /**
