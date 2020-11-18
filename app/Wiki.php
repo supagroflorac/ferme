@@ -1,4 +1,5 @@
 <?php
+
 namespace Ferme;
 
 /**
@@ -212,7 +213,7 @@ class Wiki implements InterfaceObject
      *
      * @return string
      */
-    public function getVersion() 
+    public function getVersion()
     {
         return $this->config['yeswiki_version'];
     }
@@ -225,6 +226,33 @@ class Wiki implements InterfaceObject
     public function getRelease()
     {
         return $this->config['yeswiki_release'];
+    }
+
+     /**
+     * Change user password
+     *
+     * @param string $username
+     * @param string $md5Password
+     * @return void
+     */
+    public function setPassword(string $username, string $md5Password)
+    {
+        $database = $this->dbConnexion;
+        $table = $this->name . "_users";
+
+        $sqlQuery = "UPDATE ${table} SET password = :md5Password WHERE name = :username";
+        $sth = $database->prepare($sqlQuery);
+        $values = array(
+            ':md5Password' => $md5Password,
+            ':username' => $username,
+        );
+
+        if ($sth->execute($values) === false) {
+            throw new \Exception(
+                "Impossible de changer le mot de passe de ${username}",
+                1
+            );
+        }
     }
 
     /**

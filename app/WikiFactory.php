@@ -37,7 +37,9 @@ class Wikifactory
     public function createNewWiki($name, $mail, $description)
     {
         $this->installNewWiki($name, $mail, $description);
-        return $this->createWikiFromExisting($name);
+        $wiki = $this->createWikiFromExisting($name);
+        $wiki->setPassword("wikiadmin", $this->fermeConfig['admin_password']);
+        return $wiki;
     }
 
     public function createFromArchive($archive)
@@ -72,6 +74,9 @@ class Wikifactory
         $wikiSrcFiles->copy($wikiPath);
 
         $curlSession = curl_init("${wikiUrl}PagePrincipale&installAction=install");
+
+        // Random password who will never usable.
+        $unusablePassword = password_hash("Bjarne et Stroustrup sont dans un bateau.", PASSWORD_DEFAULT);
         
         $postParameters = array(
             'config[default_language]' => 'fr',
@@ -85,8 +90,8 @@ class Wikifactory
             'config[mysql_password]' => $this->fermeConfig['db_password'],
             'config[table_prefix]' => "${wikiName}_",
             'admin_name' => 'WikiAdmin',
-            'admin_password' => $this->fermeConfig['admin_password'],
-            'admin_password_conf' => $this->fermeConfig['admin_password'],
+            'admin_password' => $unusablePassword,
+            'admin_password_conf' => $unusablePassword,
             'admin_email' => $mail,
             'config[base_url]' => $wikiUrl,
             'config[rewrite_mode]' => '0',
@@ -97,13 +102,14 @@ class Wikifactory
         curl_setopt($curlSession, CURLOPT_POSTFIELDS, http_build_query($postParameters));
         curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
         
-        if (!curl_exec($curlSession)) {
+        if (curl_exec($curlSession) === false) {
             throw new \Exception("Problème lors de la configuration du nouveau wiki."
                 . var_dump(curl_error($curlSession)));
         }
 
         // TODO Check installation error.
         // TODO On error delete files and database.
+        // TODO Change password.
 
         curl_close($curlSession);
 
