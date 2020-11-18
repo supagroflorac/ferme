@@ -1,4 +1,5 @@
 <?php
+
 namespace Ferme\Views;
 
 /**
@@ -46,8 +47,6 @@ class Home extends TwigView
             $this->ferme->wikis->search()
         );
 
-        $infos['list_themes'] = $this->getThemesList();
-
         $infos['hashcash_url'] = $this->HashCash();
 
         return ($infos);
@@ -64,26 +63,5 @@ class Home extends TwigView
         . $this->ferme->config['base_url'];
 
         return $hashcashUrl;
-    }
-
-    /**
-     * return list of theme available for new wiki
-     * @return array of array with 2 keys : name et thumb
-     */
-    private function getThemesList()
-    {
-        $themesList = array();
-
-        include "packages/"
-            . $this->ferme->config['source']
-            . "/install.config.php";
-
-        foreach ($config['themes'] as $themeName => $themeInfos) {
-            $themesList[] = array(
-                'name' => $themeName,
-                'thumb' => $themeInfos['thumb'],
-            );
-        }
-        return $themesList;
     }
 }
