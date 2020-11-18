@@ -77,7 +77,7 @@ class Wikifactory
 
         // Random password who will never usable.
         $unusablePassword = password_hash("Bjarne et Stroustrup sont dans un bateau.", PASSWORD_DEFAULT);
-        
+
         $postParameters = array(
             'config[default_language]' => 'fr',
             'config[wakka_name]' => $wikiName,
@@ -97,24 +97,21 @@ class Wikifactory
             'config[rewrite_mode]' => '0',
             'config[allow_raw_html]' => '1',
         );
-        
+
         curl_setopt($curlSession, CURLOPT_POST, true);
         curl_setopt($curlSession, CURLOPT_POSTFIELDS, http_build_query($postParameters));
         curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
-        
+
         $curlOutput = curl_exec($curlSession);
 
-        if ($curlOutput === false) {
+        if (
+            $curlOutput === false
+            or $this->checkIfWikiInstallError($curlOutput) === true
+        ) {
+            $this->deleteWikiFiles($wikiPath);
             throw new \Exception("Problème lors de la configuration du nouveau wiki."
-                . var_dump(curl_error($curlSession)));
+                . curl_error($curlSession));
         }
-
-        if ($this->checkIfWikiInstallError($curlOutput) === true) {
-            throw new \Exception("Problème lors de la configuration du nouveau wiki."
-                . var_dump(curl_error($curlSession)));
-        }
-
-        // TODO On error delete files and database.
 
         curl_close($curlSession);
 
@@ -129,7 +126,7 @@ class Wikifactory
             . "\t\t'version' => 'cercopitheque',\n"
             . "\t);\n"
             . "?>";
-        
+
         file_put_contents($wikiPath . $file, utf8_encode($content));
     }
 
@@ -140,5 +137,11 @@ class Wikifactory
             return true;
         }
         return false;
+    }
+
+    private function deleteWikiFiles($wikiPath)
+    {
+        $wikiFiles = new \Files\File($wikiPath);
+        $wikiFiles->delete();
     }
 }
