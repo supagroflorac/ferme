@@ -69,25 +69,41 @@ class Wikifactory
         $wikiSrcFiles = new \Files\File($packagePath . "files");
         $wikiSrcFiles->copy($wikiPath);
 
-        // TODO : Utiliser la class Configuration pour gérer cela ou pas...
-        // A reflechir...
-        include $packagePath . "config.php";
-
-        foreach ($config as $file => $content) {
-            file_put_contents($wikiPath . $file, utf8_encode($content));
+        $curlSession = curl_init(
+            $this->fermeConfig['base_url'] 
+            . '/'
+            . $wikiPath
+            . '/?PagePrincipale&installAction=install'
+        );
+        
+        $postParameters = array(
+            'config[default_language]' => 'fr',
+            'config[wakka_name]' => $wikiName,
+            'config[meta_description]' => '',
+            'config[meta_keywords]' => '',
+            'config[root_page]' => 'PagePrincipale',
+            'config[mysql_host]' => $this->fermeConfig['db_host'],
+            'config[mysql_database]' => $this->fermeConfig['db_name'],
+            'config[mysql_user]' => $this->fermeConfig['db_user'],
+            'config[mysql_password]' => $this->fermeConfig['db_password'],
+            'config[table_prefix]' => $wikiName . '_',
+            'admin_name' => 'WikiAdmin',
+            'admin_password' => $this->fermeConfig['admin_password'],
+            'admin_password_conf' => $this->fermeConfig['admin_password'],
+            'admin_email' => $mail,
+            'config[base_url]' => $this->fermeConfig['base_url'] . $wikiPath . '?',
+            'config[rewrite_mode]' => '0',
+            'config[allow_raw_html]' => '1',
+        );
+        
+        curl_setopt($curlSession, CURLOPT_POST, true);
+        curl_setopt($curlSession, CURLOPT_POSTFIELDS, http_build_query($postParameters));
+        //curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
+        
+        if (!curl_exec($curlSession)) {
+            throw new \Exception("bah ça merde..." . var_dump(curl_error($curlSession)));
         }
 
-        //Création de la base de donnée
-        include $packagePath . "database.php";
-
-        foreach ($listQuery as $query) {
-            $sth = $this->dbConnexion->prepare($query['query']);
-            if (!$sth->execute($query['params'])) {
-                var_dump($listQuery);
-                var_dump($sth->errorInfo());
-                var_dump($query);
-                throw new \Exception("Erreur lors de la création de la base de donnée.");
-            }
-        }
+        curl_close($curlSession);
     }
 }
