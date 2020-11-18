@@ -1,4 +1,5 @@
 <?php
+
 namespace Ferme;
 
 class Wikifactory
@@ -57,9 +58,10 @@ class Wikifactory
     private function installNewWiki($wikiName, $mail, $description)
     {
         $wikiPath = $this->getWikiPath($wikiName);
-        $packagePath = "packages/"
-            . $this->fermeConfig['source']
-            . "/";
+        $packagePath = "packages/" . $this->fermeConfig['source'] . "/";
+        $wikiUrl = $this->fermeConfig['base_url']
+            . $this->fermeConfig['ferme_path']
+            . "${wikiName}/?";
 
         // Vérifie si le wiki n'existe pas déjà
         if (is_dir($wikiPath) || is_file($wikiPath)) {
@@ -69,12 +71,7 @@ class Wikifactory
         $wikiSrcFiles = new \Files\File($packagePath . "files");
         $wikiSrcFiles->copy($wikiPath);
 
-        $curlSession = curl_init(
-            $this->fermeConfig['base_url'] 
-            . '/'
-            . $wikiPath
-            . '/?PagePrincipale&installAction=install'
-        );
+        $curlSession = curl_init("${wikiUrl}PagePrincipale&installAction=install");
         
         $postParameters = array(
             'config[default_language]' => 'fr',
@@ -86,24 +83,42 @@ class Wikifactory
             'config[mysql_database]' => $this->fermeConfig['db_name'],
             'config[mysql_user]' => $this->fermeConfig['db_user'],
             'config[mysql_password]' => $this->fermeConfig['db_password'],
-            'config[table_prefix]' => $wikiName . '_',
+            'config[table_prefix]' => "${wikiName}_",
             'admin_name' => 'WikiAdmin',
             'admin_password' => $this->fermeConfig['admin_password'],
             'admin_password_conf' => $this->fermeConfig['admin_password'],
             'admin_email' => $mail,
-            'config[base_url]' => $this->fermeConfig['base_url'] . $wikiPath . '?',
+            'config[base_url]' => $wikiUrl,
             'config[rewrite_mode]' => '0',
             'config[allow_raw_html]' => '1',
         );
         
         curl_setopt($curlSession, CURLOPT_POST, true);
         curl_setopt($curlSession, CURLOPT_POSTFIELDS, http_build_query($postParameters));
-        //curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
         
         if (!curl_exec($curlSession)) {
-            throw new \Exception("bah ça merde..." . var_dump(curl_error($curlSession)));
+            throw new \Exception("Problème lors de la configuration du nouveau wiki."
+                . var_dump(curl_error($curlSession)));
         }
 
+        // TODO Check installation error.
+        // TODO On error delete files and database.
+
         curl_close($curlSession);
+
+        $date = time();
+
+        $file = 'wakka.infos.php';
+        $content = "<?php\n"
+            . "\t\$wakkaInfos = array (\n"
+            . "\t\t'mail' => '$mail',\n"
+            . "\t\t'description' => '$description',\n"
+            . "\t\t'date' => '$date',\n"
+            . "\t\t'version' => 'cercopitheque',\n"
+            . "\t);\n"
+            . "?>";
+        
+        file_put_contents($wikiPath . $file, utf8_encode($content));
     }
 }
