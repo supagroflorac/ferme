@@ -6,6 +6,9 @@
         "twig/twig": "^3.0",
         "daiko/php-files": "dev-master"
     },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "3.*"
+    },
     "authors": [
         {
             "name": "Florestan Bredow",
