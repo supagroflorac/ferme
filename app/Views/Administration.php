@@ -21,6 +21,8 @@ class Administration extends TwigView
         foreach ($listWiki as $wiki) {
             $wiki->infos['LasPageModificationDateTime'] = $wiki->getLasPageModificationDateTime();
             $wiki->infos['FilesDiskUsage'] = $wiki->getFilesDiskUsage();
+            $wiki->infos['Release'] = $wiki->getRelease();
+            $wiki->infos['Version'] = $wiki->getVersion();
         }
         $infos['list_wikis'] = $this->object2Infos($listWiki);
 

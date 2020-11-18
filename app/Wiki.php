@@ -208,6 +208,26 @@ class Wiki implements InterfaceObject
     }
 
     /**
+     * Retourne la version de YesWiki (cercopitheque, doriphore...)
+     *
+     * @return string
+     */
+    public function getVersion() 
+    {
+        return $this->config['yeswiki_version'];
+    }
+
+    /**
+     * Retourne le numéro de release du wiki
+     *
+     * @return string
+     */
+    public function getRelease()
+    {
+        return $this->config['yeswiki_release'];
+    }
+
+    /**
      * Récupère la liste des noms de tables dans la base de donnée pour ce Wiki.
      *
      * @param $db

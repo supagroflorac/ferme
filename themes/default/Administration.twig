@@ -36,13 +36,15 @@
           <th>Nom</th>
           <th>Créé par</th>
           <th>Créé le</th>
+          <th>Version</th>
+          <th>Release</th>
           <th>Disque</th>
         </tr>
       </thead>
       <tbody>
         <!-- Liste des Wikis -->
         {% for wiki in list_wikis %}
-        <tr>
+        <tr class='wiki'>
           <td>{{ wiki['name'] }}</td>
           <td>
             <a href="mailto:{{ wiki['mail'] }}">{{ wiki['mail'] }}</a>
@@ -50,6 +52,8 @@
           <td>
             {{ wiki['date']|date("Y-m-d H:i", timezone="Europe/Paris") }}
           </td>
+          <td class='version'>{{ wiki['Version'] }}</td>
+          <td class='release'>{{ wiki['Release'] }}</td>
           <td>
             {{ (wiki['FilesDiskUsage'] / 1024 / 1024)|round(2) }} Mo
           </td>
