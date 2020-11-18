@@ -60,24 +60,51 @@ class Wikifactory
     private function installNewWiki($wikiName, $mail, $description)
     {
         $wikiPath = $this->getWikiPath($wikiName);
-        $packagePath = "packages/" . $this->fermeConfig['source'] . "/";
-        $wikiUrl = $this->fermeConfig['base_url']
-            . $this->fermeConfig['ferme_path']
-            . "${wikiName}/?";
 
         // Vérifie si le wiki n'existe pas déjà
         if (is_dir($wikiPath) || is_file($wikiPath)) {
             throw new \Exception("Ce nom de wiki est déjà utilisé (${wikiName})");
         }
 
-        $wikiSrcFiles = new \Files\File($packagePath . "files");
-        $wikiSrcFiles->copy($wikiPath);
+        $this->copyWikiFiles($wikiPath);
+        $this->setupWiki($wikiName, $mail);
+        $this->writeWakkaInfo($wikiPath, $mail, $description);
+    }
 
-        $curlSession = curl_init("${wikiUrl}PagePrincipale&installAction=install");
+    private function checkIfWikiInstallError($pageContent)
+    {
+        $errorString = "<span class=\"failed\">ECHEC</span>";
+        if (strpos($pageContent, $errorString) !== false) {
+            return true;
+        }
+        return false;
+    }
 
-        // Random password who will never usable.
+    private function deleteWikiFiles($wikiPath)
+    {
+        $wikiFiles = new \Files\File($wikiPath);
+        $wikiFiles->delete();
+    }
+
+    private function writeWakkaInfo($wikiPath, $mail, $description)
+    {
+        $file = "${wikiPath}wakka.infos.php";
+
+        $wakkaInfo = new \Ferme\Configuration($file);
+
+        $wakkaInfo['mail'] = $mail;
+        $wakkaInfo['description'] = $description;
+        $wakkaInfo['date'] = time();
+
+        $wakkaInfo->write($file, "wakkaInfos");
+    }
+
+    private function setupWiki($wikiName, $mail)
+    {
+        $wikiUrl = $this->fermeConfig['base_url']
+            . $this->fermeConfig['ferme_path']
+            . "${wikiName}/?";
         $unusablePassword = password_hash("Bjarne et Stroustrup sont dans un bateau.", PASSWORD_DEFAULT);
-
         $postParameters = array(
             'config[default_language]' => 'fr',
             'config[wakka_name]' => $wikiName,
@@ -98,6 +125,7 @@ class Wikifactory
             'config[allow_raw_html]' => '1',
         );
 
+        $curlSession = curl_init("${wikiUrl}PagePrincipale&installAction=install");
         curl_setopt($curlSession, CURLOPT_POST, true);
         curl_setopt($curlSession, CURLOPT_POSTFIELDS, http_build_query($postParameters));
         curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
@@ -108,40 +136,18 @@ class Wikifactory
             $curlOutput === false
             or $this->checkIfWikiInstallError($curlOutput) === true
         ) {
-            $this->deleteWikiFiles($wikiPath);
+            $this->deleteWikiFiles($this->getWikiPath($wikiName));
             throw new \Exception("Problème lors de la configuration du nouveau wiki."
                 . curl_error($curlSession));
         }
 
         curl_close($curlSession);
-
-        $date = time();
-
-        $file = 'wakka.infos.php';
-        $content = "<?php\n"
-            . "\t\$wakkaInfos = array (\n"
-            . "\t\t'mail' => '$mail',\n"
-            . "\t\t'description' => '$description',\n"
-            . "\t\t'date' => '$date',\n"
-            . "\t\t'version' => 'cercopitheque',\n"
-            . "\t);\n"
-            . "?>";
-
-        file_put_contents($wikiPath . $file, utf8_encode($content));
     }
 
-    private function checkIfWikiInstallError($pageContent)
+    private function copyWikiFiles($wikiPath)
     {
-        $errorString = "<span class=\"failed\">ECHEC</span>";
-        if (strpos($pageContent, $errorString) !== false) {
-            return true;
-        }
-        return false;
-    }
-
-    private function deleteWikiFiles($wikiPath)
-    {
-        $wikiFiles = new \Files\File($wikiPath);
-        $wikiFiles->delete();
+        $packagePath = "packages/" . $this->fermeConfig['source'] . "/";
+        $wikiSrcFiles = new \Files\File($packagePath . "files");
+        $wikiSrcFiles->copy($wikiPath);
     }
 }
