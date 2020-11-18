@@ -1,13 +1,6 @@
-# ferme
+# Ferme
 
 Installation automatisée de wikis ([YesWiki](https://yeswiki.net)) et interface d'administration.
-
-## Construire l'archive
-
-Nécessite *git*, *curl* et *composer*
-```bash
-source <(curl -L https://gist.githubusercontent.com/daiko/6bcb701890d90e336c1fadd8470a20e8/raw/f0617cbd8ba3e036f0073c8ab13520e98a27d321/build_ferme.sh)
-```
 
 ## Installation
 
@@ -22,5 +15,15 @@ source <(curl -L https://gist.githubusercontent.com/daiko/6bcb701890d90e336c1fad
   * ferme.config.php
  * Copier le contenu de l'archive d'installation dans le dossier.
 
+## Construire une archive d'installation
+
+Nécessite *git*, *make* et *composer*
+
+Cloner le dépôt.
+```bash
+make build-release
+```
+la release sera dans le répertoire `releases`.
+
 ## Note
- * testé avec php 7.3
+ * testé avec php 7.4
