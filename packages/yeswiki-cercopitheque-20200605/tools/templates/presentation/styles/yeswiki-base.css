@@ -1,0 +1,261 @@
+/* ==|== print styles ======================================================= */
+
+@media print {
+  * { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; }
+  a, a:visited { text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page { margin: 0.5cm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+
+/************************************* CSS Wikini original ****************************************/
+
+/* Mise en forme */
+.indent { margin-left: 40px; }
+.additions { color: #008800; }
+.deletions { color: #880000; }
+.add { font-weight: bold; color: #c00; text-decoration: underline; }
+.del { font-style: italic; color: #c00; text-decoration: line-through; }
+
+/* Navigation par table des matieres */
+.trail_table { line-height: 30px;}
+.trail_button { color: #993333; }
+
+/* Page absentes */
+span.missingpage, .list-inline, .list-inline li {display:inline;}
+
+/* previsualisation page */
+.page_preview { background-color: #FFFFBF; padding: 10px; border: 1px inset; border-bottom: none; }
+.prev_alert { background-color: red; color: white; font-size: 1.7em; font-weight: bold; margin-bottom: 5px; }
+
+/* Divers mise en forme */
+.code { margin: 3px 0; }
+.revisioninfo { color: #AAAAAA; padding-bottom: 20px; }
+.searchbox { background: #FFFFF8; border: 0px; border-bottom: 1px solid #CCCCAA; padding: 0px; margin: 0px; }
+.debug { font-size: 11px; color: #888; background:#FFF; border: 1px dotted #888; padding:10px; margin:0 auto;}
+/* Fin divers mise en forme */
+
+/* Les 3 colonnes potentielles de la page centrale */
+.page, .menupage, .rightcolumnpage {
+position:relative;
+margin:0;
+min-height:400px;
+}
+
+.footer {
+margin: 18px 0;
+padding: 0;
+text-align:center;
+}
+.footer a, .footer-hidden a {
+color: #333;
+padding: 2px 5px;
+text-decoration:none;
+display:inline-block;
+*display: inline;
+*zoom: 1;
+margin: 0;
+}
+.footer-hidden {float:right;}
+.footer .dropdown-menu a {display:block; text-align: left;}
+
+/* Ajustements mode édition */
+#ACEditor .form-actions {
+    margin: 15px 0;
+}
+
+.img-responsive img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Sélecteur de fond d'écran */
+#graphical_options {display: none}
+#bgCarousel {
+  margin-bottom: 20px;
+}
+#bgCarousel img.bgimg, #bgCarousel div.mozaicimg {
+	float:left;
+	margin:2px;
+	border:1px solid #ccc;
+	width:100px;
+	height:75px;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+}
+#bgCarousel .choosen {
+	-moz-box-shadow: 0px 0px 2px 3px #FFFF21;
+	-webkit-box-shadow: 0px 0px 2px 3px #FFFF21;
+	box-shadow:0px 0px 2px 3px #FFFF21;
+}
+
+#bgCarousel .item {
+  display: block;
+	height: 162px;
+  margin: 0 53px;
+}
+
+/* lanceur d'accordéon*/
+.accordion-trigger, .panel-heading {
+  cursor:pointer;
+}
+
+/* table des matieres */
+.toc {
+position:absolute;
+right:0px;
+z-index: 10000;
+top:50px;
+width:300px;
+}
+
+li.toc1 {padding-left:0;}
+li.toc2 {padding-left:10px;}
+li.toc3 {padding-left:20px;}
+li.toc4 {padding-left:30px;}
+li.toc5 {padding-left:40px;}
+
+.toc-menu {
+max-height: 400px;
+overflow: auto;
+}
+
+/* barres de progression */
+.progressbar {float:left; clear:both; margin:0 5px 0 0 !important;}
+
+/* page wiki en format boite modale */
+#YesWikiModal .page { min-height:auto;}
+#yw-modal-loading {position: absolute; top: 30vh; left: 48%;}
+#yw-modal-iframe {width:100%; height:70vh; border:0;}
+
+/* menu du haut fixe */
+#yw-topnav.affix {
+  position: fixed;
+  top: 0;
+  z-index:2000;
+  right: 0;
+  left: 0;
+}
+#yw-topnav.affix-top {
+  position:relative;
+}
+
+.aceditor-btn-well:hover .well {color:#333;}
+
+/* retour à la ligne pour les éléments flottants */
+.clear, .hr_clear {clear:both; margin:0; padding:0; border:0; height:0; visibility:hidden; background:transparent;}
+
+.topbarpage .btn-toolbar, .topbarpage .btn-toolbar a {margin:0;}
+.topbarpage .btn-toolbar a:hover {text-decoration:none;}
+.topbarpage .form-search {margin:0;}
+.topbarpage .dropdown-menu a {display:block;}
+.topbarpage ul ul {display: none;}
+
+.dropdown-menu .login-form {margin:0;padding:18px;}
+
+.form-search {margin:0;}
+
+.yeswiki-textarea-full {width:100% !important; height:500px !important;}
+
+.accordion-group {
+  cursor: pointer;
+}
+.accordion-group .panel-title {
+  position: relative;
+}
+.accordion-group .panel-title:after {
+    /* symbol for "opening" panels */
+    content: "\02C4";
+    color: inherit;
+    font-size: 2em;
+    line-height: 1em;
+    display: block;
+    position: absolute;
+    right: -5px;
+    top: 0;
+}
+.accordion-group .panel-heading.collapsed .panel-title:after {
+    /* symbol for "collapsed" panels */
+    content:"\02C5";
+}
+
+/* dropdown menu in modal */
+#page_options .typeahead.dropdown-menu { z-index: 200000; }
+
+#form_page_options .control-label {width:200px;}
+#form_page_options .controls {margin-left:210px;}
+
+.topbarpage .yeswiki-search-form .input-append, .topbarpage .yeswiki-search-form .input-prepend {margin-top: 0 !important;}
+
+/* on /iframe page, we use white background, can be overwritten in the theme */
+.yeswiki-page-widget {padding:15px;background:#FFF; background-image: none;}
+
+.cols2 {
+  -webkit-column-count: 2; /* Chrome, Safari, Opera */
+  -moz-column-count: 2; /* Firefox */
+  column-count: 2;
+}
+.cols3 {
+  -webkit-column-count: 3; /* Chrome, Safari, Opera */
+  -moz-column-count: 3; /* Firefox */
+  column-count: 3;
+}
+.cols4 {
+  -webkit-column-count: 4; /* Chrome, Safari, Opera */
+  -moz-column-count: 4; /* Firefox */
+  column-count: 4;
+}
+
+.full-width {
+  width: 100vw !important;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+
+.popover .page { /* gestion des popup au survol modalbox-hover */
+  min-height:auto;
+    }
+
+.popover .BAZ_label {
+display:none;} /* enlever les label des fiches bazar quand on utilise la fonction glossaire */
+
+.btn-glossaire { /* enlève le padding trop grand qui s'applique sur les boutons en général */
+    padding: 0px !important;
+    font-size: inherit !important;
+    vertical-align: inherit !important;
+}
+
+/* stuff for iframes */
+.iframe-body {
+  background-color : transparent;
+  background-image : none;
+  width : auto;
+  min-width : 0;
+  padding-top : 0;
+}
+
+.login-body {
+  background-color : transparent;
+  background-image : none;
+  width : auto;
+  min-width : 0;
+  padding : 5em 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.yeswiki-page-widget { min-height:auto !important; }

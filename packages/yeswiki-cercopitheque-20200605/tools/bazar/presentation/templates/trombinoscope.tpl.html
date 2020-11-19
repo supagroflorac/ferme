@@ -1,0 +1,63 @@
+<?php if (count($fiches)>0) : ?>
+    <div class="row">
+    <?php
+    foreach ($fiches as $fiche) : ?>
+        <div class="col-xs-4 col-md-4 bazar-entry" <?php echo $fiche['html_data'];?>>
+          <div class="thumbnail">
+            <?php
+            if (isset($fiche['imagebf_image']) && $fiche['imagebf_image']!='') : ?>
+              <img class="img-responsive" alt="<?php echo $fiche['bf_titre'];?>"
+                src="<?php echo redimensionner_image(
+                    'files/'.$fiche['imagebf_image'],
+                    'cache/image_300_400_'.$fiche['imagebf_image'],
+                    300,
+                    400,
+                    'crop'
+                ); ?>">
+            <?php
+            else : ?>
+              <img class="img-responsive"
+                 src="tools/bazar/libs/vendor/placeholder.php?size=300x400&amp;bg=666&amp;fg=444&amp;text=<?php
+            echo urlencode($fiche['bf_titre']); ?>"
+                alt="<?php
+            echo htmlspecialchars($fiche['bf_titre'], ENT_COMPAT, YW_CHARSET); ?>">
+            <?php
+            endif; ?>
+            <div class="caption">
+              <h5><?php echo $fiche['bf_titre'];?></h5>
+              <p>
+                <a class="btn btn-mini btn-info modalbox"
+                  title="<?php echo $fiche['bf_titre'];?>"
+                  href="<?php echo $GLOBALS['wiki']->href('', $fiche['id_fiche']); ?>" target="_new">
+                  More info / Plus d'infos
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+    <?php
+    endforeach; ?>
+    </div> <!-- /.row -->
+    <?php
+    $js = "
+equalheight = function(container){
+    var highestBox = 0;
+        $(container).each(function(){
+                if($(this).height() > highestBox){
+                highestBox = $(this).height();
+        }
+    });
+    $(container).height(highestBox);
+}
+
+$(window).load(function() {
+  equalheight('.bazar-entry');
+});
+
+
+$(window).resize(function(){
+  equalheight('.bazar-entry');
+});";
+    $GLOBALS['wiki']->AddJavascript($js);
+    ?>
+<?php endif; ?>
