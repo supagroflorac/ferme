@@ -9,7 +9,5 @@
     <description>
         My custom rule set that checks my code...
     </description>
-    <rule ref="PSR1" />
-    <rule ref="PSR2" />
     <rule ref="PSR12" />
 </ruleset>
