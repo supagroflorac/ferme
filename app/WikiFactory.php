@@ -147,7 +147,7 @@ class Wikifactory
     private function copyWikiFiles($wikiPath)
     {
         $packagePath = "packages/" . $this->fermeConfig['source'] . "/";
-        $wikiSrcFiles = new \Files\File($packagePath . "files");
+        $wikiSrcFiles = new \Files\File($packagePath);
         $wikiSrcFiles->copy($wikiPath);
     }
 }
