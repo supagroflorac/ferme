@@ -63,7 +63,7 @@ class AddWiki extends Action
             'success'
         );
 
-        $mail = new \Ferme\MailCreateWiki($this->ferme->config, $this->post['wikiName']);
+        $mail = new \Ferme\MailCreateWiki($this->ferme->config, $wiki);
         $mail->send();
     }
 

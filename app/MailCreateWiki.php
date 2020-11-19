@@ -1,22 +1,23 @@
 <?php
+
 namespace Ferme;
 
 class MailCreateWiki extends Mail
 {
-    public function __construct($config, $wikiName)
+    public function __construct($config, $wiki)
     {
-        $this->wikiName = $wikiName;
+        $this->wiki = $wiki;
         $this->config = $config;
     }
 
     protected function getData()
     {
         $data = array(
-            'wikiName' => $this->wikiName,
-            'wikiUrl' => $this->config['mail_from'] . '/wikis/' . $this->wikiName,
-            'to' => $this->config['mail_from'],
-            'from' => $this->config['contact'],
-            'subject' => 'Création du wiki ' . $this->wikiName,
+            'name' => $this->wiki->name,
+            'url' => $this->wiki->getInfos()['url'],
+            'to' => $this->wiki->getInfos()['mail'],
+            'from' => $this->config['mail_from'],
+            'subject' => 'Installation du wiki ' . $this->wiki->name,
             'listContacts' => $this->config['contacts']
         );
 

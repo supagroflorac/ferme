@@ -1,4 +1,5 @@
 <?php
+
 namespace Ferme;
 
 abstract class Mail
@@ -19,11 +20,14 @@ abstract class Mail
         $data = $this->getData();
         $content = $twig->render($this->getTemplate(), $data);
 
+        $headers = 'From: ' . $data['from'] . "\r\n"
+            . 'Reply-To: ' . $data['from'] . "\r\n";
+
         mail(
             $data['to'],
             $data['subject'],
-            $content
-            //"From:" . $data['from']
+            $content,
+            $headers
         );
     }
 }
