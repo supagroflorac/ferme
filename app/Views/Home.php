@@ -49,6 +49,8 @@ class Home extends TwigView
 
         $infos['hashcash_url'] = $this->HashCash();
 
+        $infos['welcome_text'] = $this->ferme->config['welcome_text'];
+
         return ($infos);
     }
 

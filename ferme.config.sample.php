@@ -1,4 +1,5 @@
 <?php
+
 $config = array(
     'db_host' => 'localhost',
     'db_name' => 'XXXXXXXXXX',
@@ -12,6 +13,7 @@ $config = array(
     'tmp_path' => '/tmp/',
     'template' => 'default',
     'mail_from' => 'no-reply@domain.tld',
+    'welcome_text' => "<h1>Bienvenue</h1> ! <p> Un texte de description.",
     'users' => array(
         // Les mots de passe doivent être chiffré
         'admin' => password_hash('password', PASSWORD_DEFAULT),

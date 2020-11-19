@@ -26,7 +26,7 @@
 
   <div class="container">
     <div class="row vcenter">
-      <div class="col-md-12 jumbotron">
+      <div class="col-md-6 jumbotron">
         <!-- Attention il ne faut pas changer class et id du formulaire
         sinon hashcash ne fonctionne plus.-->
         <form id="newWiki" class="newForm form-horizontal" action="?action=addWiki" method="post">
@@ -34,7 +34,7 @@
           <div class="form-group">
             <label class="col-sm-5 control-label" for="wikiName">Nom du wiki</label>
             <div class="col-sm-7">
-              <input  type="text" name="wikiName" placeholder="10 caractères max" required="required"  maxlength="10" {% if mail %}value="{{ wiki_name }}"{% endif %} />
+              <input  type="text" name="wikiName" placeholder="10 caractères max" required="required"  maxlength="10" {% if wiki_name %}value="{{ wiki_name }}"{% endif %} />
             </div>
           </div>
 
@@ -64,6 +64,9 @@
           </div>
         </form>
       </div>
+      <div id="welcome" class="lead col-md-6">
+        {{ welcome_text|raw }}
+      </div> 
     </div>
   </div>
 
