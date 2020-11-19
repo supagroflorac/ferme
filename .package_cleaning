@@ -1,0 +1,9 @@
+.gitignore
+.git
+.github
+.editorconfig
+INSTALL.md
+docker-compose.yml
+tools/autoconf/.git
+tools/autoconf/.gitignore
+tools/autoconf/composer*

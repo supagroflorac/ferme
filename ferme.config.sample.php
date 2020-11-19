@@ -6,14 +6,14 @@ $config = array(
     'db_user' => 'XXXXXXXXXX',
     'db_password' => 'XXXXXXXXXX',
     'base_url' => 'http://localhost/ferme/',
-    'source' => 'yeswiki-cercopitheque-20200605',
+    'source' => 'cercopitheque',
     'log_file' => 'ferme.log',
     'ferme_path' => 'wikis/',
     'archives_path' => 'archives/',
     'tmp_path' => '/tmp/',
     'template' => 'default',
     'mail_from' => 'no-reply@domain.tld',
-    'welcome_text' => "<h1>Bienvenue</h1> ! <p> Un texte de description.",
+    'welcome_text' => "<h1>Bienvenue ! </h1> <p> Un texte de description.",
     'users' => array(
         // Les mots de passe doivent être chiffré
         'admin' => password_hash('password', PASSWORD_DEFAULT),
