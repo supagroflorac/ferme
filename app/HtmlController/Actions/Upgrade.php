@@ -1,29 +1,30 @@
 <?php
-namespace Ferme\Actions;
+
+namespace Ferme\HtmlController\Actions;
 
 /**
  * @author Florestan Bredow <florestan.bredow@supagro.fr>
  * @link http://www.phpdoc.org/docs/latest/index.html
  */
-class DeleteArchive extends Action
+class Upgrade extends Action
 {
     public function execute()
     {
         if (!isset($this->get['name'])) {
             $this->ferme->alerts->add(
-                "Paramètres manquant pour la suppression de l'archive."
+                "Paramètres manquant pour la suppression du wiki."
             );
         }
 
         try {
-            $this->ferme->deleteArchive($this->get['name']);
+            $this->ferme->upgrade($this->get['name']);
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');
             return;
         }
 
         $this->ferme->alerts->add(
-            "L'archive " . $this->get['name'] . " a été supprimée avec succès",
+            "Le wiki " . $this->get['name'] . " a été mis à jour avec succès",
             'success'
         );
     }

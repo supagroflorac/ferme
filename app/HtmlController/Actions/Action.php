@@ -1,5 +1,6 @@
 <?php
-namespace Ferme\Actions;
+
+namespace Ferme\HtmlController\Actions;
 
 /**
  * @author Florestan Bredow <florestan.bredow@supagro.fr>

@@ -1,5 +1,6 @@
 <?php
-namespace Ferme\Actions;
+
+namespace Ferme\HtmlController\Actions;
 
 /**
  * @author Florestan Bredow <florestan.bredow@supagro.fr>
@@ -9,7 +10,8 @@ class Login extends Action
 {
     public function execute()
     {
-        if (isset($this->post['username'])
+        if (
+            isset($this->post['username'])
             and isset($this->post['password'])
         ) {
             $this->ferme->users->login(

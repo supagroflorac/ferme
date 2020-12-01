@@ -1,4 +1,5 @@
 <?php
+
 namespace Ferme;
 
 if (!is_dir('vendor')) {
@@ -32,5 +33,5 @@ try {
     exit;
 }
 
-$controller = new Controller($ferme);
+$controller = new HtmlController\Controller($ferme);
 $controller->run($_GET, $_POST);

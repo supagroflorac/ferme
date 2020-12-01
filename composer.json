@@ -19,7 +19,8 @@
         "psr-4": {
           "Ferme\\": "app",
           "Ferme\\Views\\": "app/Views",
-          "Ferme\\Actions\\": "app/Actions"
+          "Ferme\\HtmlController\\": "app/HtmlController",
+          "Ferme\\HtmlController\\Actions\\": "app/HtmlController/Actions"
         }
     }
 }

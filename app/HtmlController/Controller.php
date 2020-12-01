@@ -1,5 +1,6 @@
 <?php
-namespace Ferme;
+
+namespace Ferme\HtmlController;
 
 /**
  * Classe Controller
@@ -48,7 +49,7 @@ class Controller
 
     private function ajax($get)
     {
-        $view = new Views\AjaxListWikis($this->ferme);
+        $view = new \Ferme\Views\AjaxListWikis($this->ferme);
         if (isset($get['query']) and ($get['query'] === 'search')) {
             switch ($get['query']) {
                 case 'search':
@@ -71,7 +72,7 @@ class Controller
 
     private function download($download)
     {
-        $download = new Download($download, $this->ferme);
+        $download = new \Ferme\Download($download, $this->ferme);
         $download->serve();
     }
 
@@ -80,19 +81,19 @@ class Controller
         switch ($view) {
             case 'admin':
                 if (!$this->ferme->users->isLogged()) {
-                    $view = new Views\Authentification($this->ferme);
+                    $view = new \Ferme\Views\Authentification($this->ferme);
                     $view->show();
                     break;
                 }
-                $view = new Views\Administration($this->ferme);
+                $view = new \Ferme\Views\Administration($this->ferme);
                 $view->show();
                 break;
             case 'exportMailing':
-                $view = new Views\CsvMailing($this->ferme);
+                $view = new \Ferme\Views\CsvMailing($this->ferme);
                 $view->show();
                 break;
             default:
-                $view = new Views\Home($this->ferme);
+                $view = new \Ferme\Views\Home($this->ferme);
                 $view->show();
                 break;
         }
@@ -100,7 +101,7 @@ class Controller
 
     private function action($get, $post)
     {
-        $className = "Ferme\\Actions\\" . ucfirst($get['action']);
+        $className = "Ferme\\HtmlController\Actions\\" . ucfirst($get['action']);
         if (!class_exists($className)) {
             return;
         }
