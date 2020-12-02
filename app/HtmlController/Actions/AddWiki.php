@@ -20,7 +20,8 @@ class AddWiki extends Action
             return;
         }
 
-        if (!isset($this->post['wikiName'])
+        if (
+            !isset($this->post['wikiName'])
             or !isset($this->post['mail'])
             or !isset($this->post['description'])
         ) {
@@ -69,15 +70,17 @@ class AddWiki extends Action
             'success'
         );
 
-        $mail = new \Ferme\MailCreateWiki($this->ferme->config, $wiki);
+        $mail = new \Ferme\MailCreateWiki($this->ferme->config, $wiki, $wikiAdminPassword);
         $mail->send();
     }
 
     private function isHashcashValid()
     {
         require_once 'app/secret/wp-hashcash.php';
-        if (!isset($this->post["hashcash_value"])
-            || hashcash_field_value() != $this->post["hashcash_value"]) {
+        if (
+            !isset($this->post["hashcash_value"])
+            || hashcash_field_value() != $this->post["hashcash_value"]
+        ) {
             return false;
         }
         return true;

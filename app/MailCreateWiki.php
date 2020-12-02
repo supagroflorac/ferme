@@ -4,10 +4,13 @@ namespace Ferme;
 
 class MailCreateWiki extends Mail
 {
-    public function __construct($config, $wiki)
+    private string $wikiAdminPassword;
+
+    public function __construct($config, $wiki, $wikiAdminPassword)
     {
         $this->wiki = $wiki;
         $this->config = $config;
+        $this->wikiAdminPassword = $wikiAdminPassword;
     }
 
     protected function getData()
@@ -18,6 +21,7 @@ class MailCreateWiki extends Mail
             'to' => $this->wiki->getInfos()['mail'],
             'from' => $this->config['mail_from'],
             'subject' => 'Installation du wiki ' . $this->wiki->name,
+            'wikiAdminPassword' => $this->wikiAdminPassword,
             'listContacts' => $this->config['contacts']
         );
 
