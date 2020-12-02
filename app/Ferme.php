@@ -46,7 +46,7 @@ class Ferme
         );
 
         $this->wikis[$name]->upgrade(
-            "packages/" . $this->config['source'] . "/"
+            $this->getWikiUpgradeSourcePath()
         );
     }
 
@@ -127,9 +127,10 @@ class Ferme
         $this->wikis->add($wiki->name, $wiki);
     }
 
-    /*************************************************************************
-     * Gestion des URLs
-     ************************************************************************/
+    public function getWikiUpgradeSourcePath()
+    {
+        return "packages/" . $this->config['source'] . "/";
+    }
 
     /**
      * Établis la connexion a la base de donnée si ce n'est pas déjà fait.
