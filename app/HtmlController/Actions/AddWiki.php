@@ -55,11 +55,8 @@ class AddWiki extends Action
             );
             $this->ferme->wikis->add($wikiName, $wiki);
             $wikiAdminPassword = \Ferme\Password::random(12);
-            $this->ferme->wikis[$wikiName]->setPassword(
-                "WikiAdmin",
-                $wikiAdminPassword
-            );
-            $this->ferme->wikis[$wikiName]->addAdminUser(
+            $wiki->setPassword("WikiAdmin", md5($wikiAdminPassword));
+            $wiki->addAdminUser(
                 "FermeAdmin",
                 $this->ferme->config['mail_from'],
                 $this->ferme->config['admin_password'],
@@ -69,9 +66,9 @@ class AddWiki extends Action
             return;
         }
 
+        $wikiUrl = $this->ferme->config['base_url'] . $wiki->path;
         $this->ferme->alerts->add(
-            '<a href="' . $this->ferme->config['base_url']
-            . $wiki->path . '">Visiter le nouveau wiki</a>',
+            "<a href='${wikiUrl}'>Visiter le nouveau wiki</a>. Vous recevrez un mail avec le mot de passe WikiAdmin.",
             'success'
         );
 
