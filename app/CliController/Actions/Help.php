@@ -12,8 +12,18 @@ class Help extends Action
 
     public function execute()
     {
+        if (count($this->parameters) > 0) {
+            $this->commandUsage($this->parameters[0]);
+            return;
+        }
+
+        $this->usage();
+    }
+
+    public function usage()
+    {
         print("\nUsage : \n  command [arguments] \n");
-        print("\nGet help on command : \n  command --help \n");
+        print("\nGet help on command : \n  help command \n");
         print("\n");
         print("Available commands : \n");
 
@@ -25,6 +35,12 @@ class Help extends Action
             print("  $action\t\t$description\n");
         }
         print("\n");
+    }
+
+    private function commandUsage($commandName)
+    {
+        $class = "\\Ferme\\CliController\\Actions\\" . ucfirst($commandName);
+        print($class::usage());
     }
 
     private function getListActions(): array

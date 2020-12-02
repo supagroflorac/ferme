@@ -27,4 +27,9 @@ class Ls extends Action
         }
         print("\n");
     }
+
+    public function usage()
+    {
+        printf("\nNo parameters.\n");
+    }
 }
