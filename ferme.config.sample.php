@@ -15,12 +15,12 @@ $config = array(
     'mail_from' => 'no-reply@domain.tld',
     'welcome_text' => "<h1>Bienvenue ! </h1> <p> Un texte de description.",
     'users' => array(
-        // Les mots de passe doivent être chiffré
+        // Password must be encrypted
         'admin' => password_hash('password', PASSWORD_DEFAULT),
     ),
     'contacts' => array(
         'Votre nom' => 'votre.nom@domain.tld'
     ),
-    // Default md5 password for installed wikis
+    // Default md5 password for FermeAdmin account in installed wikis
     'admin_password' => md5('password'),
 );

@@ -59,6 +59,11 @@ class AddWiki extends Action
                 "WikiAdmin",
                 $wikiAdminPassword
             );
+            $this->ferme->wikis[$wikiName]->addAdminUser(
+                "FermeAdmin",
+                $this->ferme->config['mail_from'],
+                $this->ferme->config['admin_password'],
+            );
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');
             return;
