@@ -17,6 +17,7 @@ class DeleteArchive extends Action
         }
 
         try {
+            $this->users->isAuthorized();
             $this->ferme->deleteArchive($this->get['name']);
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');

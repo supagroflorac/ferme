@@ -1,4 +1,5 @@
 <?php
+
 namespace Ferme;
 
 class Ferme
@@ -30,7 +31,6 @@ class Ferme
      ************************************************************************/
     public function delete($name)
     {
-        $this->users->isAuthorized();
         $this->wikis->delete($name);
         $this->log->write(
             $this->users->whoIsLogged(),
@@ -40,21 +40,18 @@ class Ferme
 
     public function upgrade($name)
     {
-        $this->users->isAuthorized();
-
         $this->log->write(
             $this->users->whoIsLogged(),
             "Mise à jour du wiki '$name'"
         );
 
         $this->wikis[$name]->upgrade(
-            "packages/" . $this->config['source']. "/files/"
+            "packages/" . $this->config['source'] . "/"
         );
     }
 
     public function updateConfiguration($name)
     {
-        $this->users->isAuthorized();
         $this->log->write(
             $this->users->whoIsLogged(),
             "Mise a jour de configuration de '$name'"
@@ -78,7 +75,7 @@ class Ferme
         if (!is_dir($this->config['archives_path'])) {
             if (!mkdir($this->config['archives_path'], 0777, true)) {
                 throw new \Exception(
-                "Le dossier des archives ("
+                    "Le dossier des archives ("
                     . $this->config['archives_path']
                     . ") ne peut être créé.",
                     1
@@ -92,7 +89,6 @@ class Ferme
      ************************************************************************/
     public function archiveWiki($name)
     {
-        $this->users->isAuthorized();
         $this->log->write(
             $this->users->whoIsLogged(),
             "Archive le wiki '$name'"
@@ -106,7 +102,6 @@ class Ferme
 
     public function deleteArchive($name)
     {
-        $this->users->isAuthorized();
         $this->log->write(
             $this->users->whoIsLogged(),
             "Suppression de l'archive '$name'"
@@ -116,12 +111,11 @@ class Ferme
 
     public function restore($name)
     {
-        $this->users->isAuthorized();
         $archive = $this->archives[$name];
         $wikiName = $archive->getInfos()['name'];
 
         if ($this->wikis->exist($wikiName)) {
-          throw new \Exception("Un wiki de ce nom ($wikiName) existe déjà.");
+            throw new \Exception("Un wiki de ce nom ($wikiName) existe déjà.");
         }
 
         $this->log->write(

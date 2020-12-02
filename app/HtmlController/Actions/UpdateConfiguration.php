@@ -17,6 +17,7 @@ class UpdateConfiguration extends Action
         }
 
         try {
+            $this->users->isAuthorized();
             $this->ferme->updateConfiguration($this->get['name']);
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');

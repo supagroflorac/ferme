@@ -17,6 +17,7 @@ class Archive extends Action
         }
 
         try {
+            $this->users->isAuthorized();
             $this->ferme->archiveWiki($this->get['name']);
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');

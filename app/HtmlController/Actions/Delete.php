@@ -17,6 +17,7 @@ class Delete extends Action
         }
 
         try {
+            $this->ferme->users->isAuthorized();
             $this->ferme->archiveWiki($this->get['name']);
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');
@@ -24,6 +25,7 @@ class Delete extends Action
         }
 
         try {
+            $this->ferme->users->isAuthorized();
             $this->ferme->delete($this->get['name']);
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');

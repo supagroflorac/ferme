@@ -17,6 +17,7 @@ class Restore extends Action
         }
 
         try {
+            $this->users->isAuthorized();
             $this->ferme->restore($this->get['name']);
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');

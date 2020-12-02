@@ -17,6 +17,7 @@ class Upgrade extends Action
         }
 
         try {
+            $this->ferme->users->isAuthorized();
             $this->ferme->upgrade($this->get['name']);
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');
