@@ -15,7 +15,7 @@ Installation automatisée de wikis ([YesWiki](https://yeswiki.net)) et interface
   * ferme.config.php
  * Copier le contenu de l'archive d'installation dans le dossier.
 
-## Gérer la ferme en ligne de commande :
+## Gérer la ferme en ligne de commande
 
 Vous pouvez utiliser `bin/ferme` dans le répertoire de la ferme. Pour savoir comment l'utiliser :
 ```bash
