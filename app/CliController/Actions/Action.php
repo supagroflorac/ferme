@@ -7,7 +7,7 @@ abstract class Action
     protected \Ferme\Ferme $ferme;
     protected array $parameters;
 
-    protected const DESCRIPTION = 'TODO : Write this help. Sorry...';
+    public const DESCRIPTION = 'TODO : Write this help. Sorry...';
 
     public function __construct(\Ferme\Ferme $ferme, array $parameters)
     {

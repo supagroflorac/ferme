@@ -8,7 +8,7 @@ namespace Ferme\CliController\Actions;
  */
 class Help extends Action
 {
-    protected const DESCRIPTION = "This help";
+    public const DESCRIPTION = "This help";
 
     public function execute()
     {
@@ -21,8 +21,10 @@ class Help extends Action
         foreach ($listActions as $action) {
             $class = "\\Ferme\\CliController\\Actions\\" . ucfirst($action);
             $description = $class::DESCRIPTION;
-            print("  $action\t\t$description\n\n");
+            $action = strtolower($action);
+            print("  $action\t\t$description\n");
         }
+        print("\n");
     }
 
     private function getListActions(): array
