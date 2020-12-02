@@ -53,6 +53,11 @@ class AddWiki extends Action
                 $this->cleanEntry($this->post['description'])
             );
             $this->ferme->wikis->add($wikiName, $wiki);
+            $wikiAdminPassword = \Ferme\Password::random(12);
+            $this->ferme->wikis[$wikiName]->setPassword(
+                "WikiAdmin",
+                $wikiAdminPassword
+            );
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');
             return;
