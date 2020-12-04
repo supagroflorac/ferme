@@ -315,6 +315,22 @@ class Wiki implements InterfaceObject
         return $this->infos;
     }
 
+    public function isUserExist(string $username): bool
+    {
+        $database = $this->dbConnexion;
+        $table =  $this->name . "_triples";
+
+        $sqlQuery = "SELECT 1 FROM ${table} WHERE name=:username LIMIT 1;";
+        $sth = $database->prepare($sqlQuery);
+
+        $sth->execute(array(':username' => $username));
+
+        if ($sth->fetchColumn() > 0) {
+            return true;
+        }
+        return false;
+    }
+
     public function addAdminUser(string $username, string $mail, string $md5Password)
     {
         $this->addUser($username, $mail, $md5Password);
