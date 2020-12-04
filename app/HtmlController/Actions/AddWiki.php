@@ -20,7 +20,8 @@ class AddWiki extends Action
             return;
         }
 
-        if (!isset($this->post['wikiName'])
+        if (
+            !isset($this->post['wikiName'])
             or !isset($this->post['mail'])
             or !isset($this->post['description'])
         ) {
@@ -53,26 +54,35 @@ class AddWiki extends Action
                 $this->cleanEntry($this->post['description'])
             );
             $this->ferme->wikis->add($wikiName, $wiki);
+            $wikiAdminPassword = \Ferme\Password::random(12);
+            $wiki->setPassword("WikiAdmin", md5($wikiAdminPassword));
+            $wiki->addAdminUser(
+                "FermeAdmin",
+                $this->ferme->config['mail_from'],
+                $this->ferme->config['admin_password'],
+            );
         } catch (\Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');
             return;
         }
 
+        $wikiUrl = $this->ferme->config['base_url'] . $wiki->path;
         $this->ferme->alerts->add(
-            '<a href="' . $this->ferme->config['base_url']
-            . $wiki->path . '">Visiter le nouveau wiki</a>',
+            "<a href='${wikiUrl}'>Visiter le nouveau wiki</a>. Vous recevrez un mail avec le mot de passe WikiAdmin.",
             'success'
         );
 
-        $mail = new \Ferme\MailCreateWiki($this->ferme->config, $wiki);
+        $mail = new \Ferme\MailCreateWiki($this->ferme->config, $wiki, $wikiAdminPassword);
         $mail->send();
     }
 
     private function isHashcashValid()
     {
         require_once 'app/secret/wp-hashcash.php';
-        if (!isset($this->post["hashcash_value"])
-            || hashcash_field_value() != $this->post["hashcash_value"]) {
+        if (
+            !isset($this->post["hashcash_value"])
+            || hashcash_field_value() != $this->post["hashcash_value"]
+        ) {
             return false;
         }
         return true;

@@ -18,7 +18,7 @@ class Wikifactory
      * @param  string $name nom du wiki a charger.
      * @return  Wiki        Le wiki chargé.
      */
-    public function createWikiFromExisting($name)
+    public function loadWikiFromExisting(string $name): \Ferme\Wiki
     {
         $wikiPath = $this->getWikiPath($name);
         $wiki = new Wiki($name, $wikiPath, $this->fermeConfig, $this->dbConnexion);
@@ -30,16 +30,22 @@ class Wikifactory
     /**
      * Install un nouveau wiki
      * @param  string $name        Nom du wiki
-     * @param  string $mail        Mail de la personne qui install le wiki
+     * @param  string $mail        Mail de la personne qui installe le wiki
      * @param  string $description Description du Wiki
-     * @return Wiki                Le wiki fraichement installé
+     * @return Wiki                Le wiki fraîchement installé
      */
-    public function createNewWiki($name, $mail, $description)
+    public function createNewWiki(string $name, string $mail, string $description): \Ferme\Wiki
     {
-        $this->installNewWiki($name, $mail, $description);
-        $wiki = $this->createWikiFromExisting($name);
-        $wiki->setPassword("WikiAdmin", $this->fermeConfig['admin_password']);
-        return $wiki;
+        $wikiPath = $this->getWikiPath($name);
+
+        // Vérifie si le wiki n'existe pas déjà
+        if (is_dir($wikiPath) || is_file($wikiPath)) {
+            throw new \Exception("Ce nom de wiki est déjà utilisé (${name})");
+        }
+        $this->copyWikiFiles($wikiPath);
+        $this->setupWiki($name, $mail);
+        $this->writeWakkaInfo($wikiPath, $mail, $description);
+        return $this->loadWikiFromExisting($name);
     }
 
     public function createFromArchive($archive)
@@ -49,26 +55,12 @@ class Wikifactory
             $this->fermeConfig['archives_path'],
             $this->dbConnexion
         );
-        return $this->createWikiFromExisting($wikiName);
+        return $this->loadWikiFromExisting($wikiName);
     }
 
     private function getWikiPath($name)
     {
         return $this->fermeConfig['ferme_path'] . $name . "/";
-    }
-
-    private function installNewWiki($wikiName, $mail, $description)
-    {
-        $wikiPath = $this->getWikiPath($wikiName);
-
-        // Vérifie si le wiki n'existe pas déjà
-        if (is_dir($wikiPath) || is_file($wikiPath)) {
-            throw new \Exception("Ce nom de wiki est déjà utilisé (${wikiName})");
-        }
-
-        $this->copyWikiFiles($wikiPath);
-        $this->setupWiki($wikiName, $mail);
-        $this->writeWakkaInfo($wikiPath, $mail, $description);
     }
 
     private function checkIfWikiInstallError($pageContent)

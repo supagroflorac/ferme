@@ -314,4 +314,102 @@ class Wiki implements InterfaceObject
         );
         return $this->infos;
     }
+
+    public function isUserExist(string $username): bool
+    {
+        $database = $this->dbConnexion;
+        $table =  $this->name . "_triples";
+
+        $sqlQuery = "SELECT 1 FROM ${table} WHERE name=:username LIMIT 1;";
+        $sth = $database->prepare($sqlQuery);
+
+        $sth->execute(array(':username' => $username));
+
+        if ($sth->fetchColumn() > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public function addAdminUser(string $username, string $mail, string $md5Password)
+    {
+        $this->addUser($username, $mail, $md5Password);
+        $this->addUserToGroup($username, 'admins');
+    }
+
+    public function addUser(string $username, string $mail, string $md5Password)
+    {
+        $database = $this->dbConnexion;
+        $table =  $this->name . "_users";
+
+        $sqlQuery = "INSERT INTO ${table} (name, password, email, signuptime, motto)
+            VALUES (:name, :password, :mail, now(), '');";
+
+        $sth = $database->prepare($sqlQuery);
+
+        $values = array(
+            ':name' => $username,
+            ':mail' => $mail,
+            ':password' => $md5Password,
+        );
+
+        if ($sth->execute($values) === false) {
+            throw new \Exception(
+                "Impossible de créer l'utilisateur ${username}. Existe t'il déjà ?",
+                1
+            );
+        }
+    }
+
+    public function addUserToGroup(string $username, string $groupname)
+    {
+        $groupMembers = $this->getGroupMembers($groupname);
+        if (in_array($username, $groupMembers)) {
+            return;
+        }
+
+        $database = $this->dbConnexion;
+        $table =  $this->name . "_triples";
+        $resource = "ThisWikiGroup:${groupname}";
+
+        $sqlQuery = "UPDATE ${table} SET value=:groupMembers WHERE resource=:resource LIMIT 1;";
+        $sth = $database->prepare($sqlQuery);
+
+        $groupMembers[] = $username;
+
+        $values = array(
+            ':resource' => $resource,
+            ':groupMembers' => implode(PHP_EOL, $groupMembers),
+        );
+
+        if ($sth->execute($values) === false) {
+            throw new \Exception(
+                "Erreur lors de l'ajout de ${username} au groupe ${groupname}.",
+                1
+            );
+        }
+    }
+
+    private function getGroupMembers(string $groupname): array
+    {
+        $database = $this->dbConnexion;
+        $table =  $this->name . "_triples";
+        $resource = "ThisWikiGroup:${groupname}";
+
+        $sqlQuery = "SELECT `value` FROM ${table} WHERE resource=:resource LIMIT 1;";
+        $sth = $database->prepare($sqlQuery);
+
+        $values = array(
+            ':resource' => $resource,
+        );
+
+        if ($sth->execute($values) === false) {
+            throw new \Exception(
+                "Ne peut récuperer la liste des membres du groupe ${groupname}. Le groupe existe t'il ?",
+                1
+            );
+        }
+        $result = explode(PHP_EOL, $sth->fetch(\PDO::FETCH_ASSOC)['value']);
+        return $result;
+    }
 }

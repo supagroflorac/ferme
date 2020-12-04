@@ -36,13 +36,13 @@ class WikisCollection extends Collection
                 continue;
             }
             $wikiName = basename($wikiPath);
-            $wiki = $wikiFactory->createWikiFromExisting($wikiName);
+            $wiki = $wikiFactory->loadWikiFromExisting($wikiName);
             if (!$wiki->loadConfiguration()) {
                 continue;
             }
             $this->add(
                 $wikiName,
-                $wikiFactory->createWikiFromExisting($wikiName)
+                $wikiFactory->loadWikiFromExisting($wikiName)
             );
         }
     }

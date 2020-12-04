@@ -2,6 +2,12 @@ Bonjour,
 
 Votre wiki : {{ name }} a été installé avec succès. Vous le trouverez à l'adresse : {{ url }}
 
+Le compte administrateur : 
+ - identifiant : WikiAdmin
+ - Mot de passe : {{ wikiAdminPassword }}
+
+Nous vous recommandons de le changer et de choisir un mot de passe que vous n'utilisez pas ailleurs.
+
 Pour toute information complémentaire n'hésitez pas à contacter :
 {% for name, mail in listContacts %}
  - {{ name }} : {{ mail }}
