@@ -62,6 +62,7 @@ build-release: init
 	--exclude=".gitignore" \
 	--exclude=".vscode" \
 	--exclude="ferme.log" \
+	--exclude="patch/" \
 	. \
 	--transform 's/^./ferme/'
 	@composer update
