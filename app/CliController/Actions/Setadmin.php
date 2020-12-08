@@ -8,8 +8,7 @@ namespace Ferme\CliController\Actions;
  */
 class Setadmin extends Action
 {
-    public const DESCRIPTION = "Adds the user FermeAdmin as defined in the "
-        . "configuration file for one or all wikis. (replace existing)";
+    public const DESCRIPTION = "Adds the user FermeAdmin (replace existing)";
 
     public function execute()
     {
