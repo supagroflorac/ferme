@@ -272,7 +272,7 @@ class Wiki implements InterfaceObject
     public function isUserExist(string $username): bool
     {
         $database = $this->dbConnexion;
-        $table =  $this->name . "_triples";
+        $table =  $this->name . "_users";
 
         $sqlQuery = "SELECT 1 FROM ${table} WHERE name=:username LIMIT 1;";
         $sth = $database->prepare($sqlQuery);
