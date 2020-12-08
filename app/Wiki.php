@@ -181,14 +181,14 @@ class Wiki implements InterfaceObject
 
     public function upgrade($srcPath)
     {
-        // Supprime les fichiers du wiki
-        $fileToIgnore = array(
+        // Delete wiki files
+        $fileToKeep = array(
             '.', '..', 'wakka.config.php', 'wakka.infos.php', 'files', 'themes'
         );
 
         if ($res = opendir($this->path)) {
             while (($filename = readdir($res)) !== false) {
-                if (!in_array($filename, $fileToIgnore)) {
+                if (!in_array($filename, $fileToKeep)) {
                     $file = new \Files\File($this->path . '/' . $filename);
                     $file->delete();
                 }
@@ -196,16 +196,20 @@ class Wiki implements InterfaceObject
             closedir($res);
         }
 
-        // Copie les nouveaux fichiers
+        // Copies new files
         if ($res = opendir($srcPath)) {
             while (($filename = readdir($res)) !== false) {
-                if (!in_array($filename, $fileToIgnore)) {
+                if (!in_array($filename, $fileToKeep)) {
                     $file = new \Files\File($srcPath . $filename);
                     $file->copy($this->path . '/' . $filename);
                 }
             }
             closedir($res);
         }
+
+        // Updates the version and release number.
+        include_once "${srcPath}/includes/constants.php";
+        $this->setRelease(YESWIKI_VERSION, YESWIKI_RELEASE);
     }
 
     /**
@@ -254,39 +258,6 @@ class Wiki implements InterfaceObject
             );
         }
     }
-
-    /**
-     * Récupère la liste des noms de tables dans la base de donnée pour ce Wiki.
-     *
-     * @param $db
-     * @return mixed
-     */
-    private function getDBTablesList()
-    {
-        $database = $this->dbConnexion;
-        // Echape le caractère '_' et '%'
-        $search = array('%', '_');
-        $replace = array('\%', '\_');
-        $tablePrefix = str_replace(
-            $search,
-            $replace,
-            $this->config['table_prefix']
-        ) . '%';
-
-        $query = "SHOW TABLES LIKE ?";
-        $sth = $database->prepare($query);
-        $sth->execute(array($tablePrefix));
-
-        $results = $sth->fetchAll();
-
-        $finalResults = array();
-        foreach ($results as $value) {
-            $finalResults[] = $value[0];
-        }
-
-        return $finalResults;
-    }
-
 
     public function loadInfos()
     {
@@ -390,6 +361,38 @@ class Wiki implements InterfaceObject
         }
     }
 
+    /**
+     * Récupère la liste des noms de tables dans la base de donnée pour ce Wiki.
+     *
+     * @param $db
+     * @return mixed
+     */
+    private function getDBTablesList()
+    {
+        $database = $this->dbConnexion;
+        // Echape le caractère '_' et '%'
+        $search = array('%', '_');
+        $replace = array('\%', '\_');
+        $tablePrefix = str_replace(
+            $search,
+            $replace,
+            $this->config['table_prefix']
+        ) . '%';
+
+        $query = "SHOW TABLES LIKE ?";
+        $sth = $database->prepare($query);
+        $sth->execute(array($tablePrefix));
+
+        $results = $sth->fetchAll();
+
+        $finalResults = array();
+        foreach ($results as $value) {
+            $finalResults[] = $value[0];
+        }
+
+        return $finalResults;
+    }
+
     private function getGroupMembers(string $groupname): array
     {
         $database = $this->dbConnexion;
@@ -411,5 +414,13 @@ class Wiki implements InterfaceObject
         }
         $result = explode(PHP_EOL, $sth->fetch(\PDO::FETCH_ASSOC)['value']);
         return $result;
+    }
+
+    private function setRelease(string $version, string $release)
+    {
+        $this->loadConfiguration();
+        $this->config['yeswiki_version'] = $version;
+        $this->config['yeswiki_release'] = $release;
+        $this->config->write($this->path . "/wakka.config.php");
     }
 }
