@@ -183,7 +183,7 @@ class Wiki implements InterfaceObject
     {
         // Delete wiki files
         $fileToKeep = array(
-            '.', '..', 'wakka.config.php', 'wakka.infos.php', 'files', 'themes'
+            '.', '..', 'wakka.config.php', 'wakka.infos.php', 'files', 'themes', 'custom'
         );
 
         if ($res = opendir($this->path)) {
