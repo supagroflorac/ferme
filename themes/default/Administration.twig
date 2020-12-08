@@ -70,13 +70,8 @@
                 <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
               </a>
               <a  class="upgrade btn btn-primary"
-                  title="Mets à jour le wiki vers la dernière version (fichiers uniquement)"
+                  title="Mets à jour le wiki vers la dernière version"
                   href="?view=admin&action=upgrade&name={{ wiki['name'] }}">
-                <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-              </a>
-              <a  class="save btn btn-warning"
-                  title="Mets à jour la configuration avec les paramètres de la ferme (url et base de données)"
-                  href="?view=admin&action=updateConfiguration&name={{ wiki['name'] }}">
                 <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
               </a>
               <a  class="delete btn btn-danger"
@@ -116,15 +111,18 @@
           <td>
             <div class="btn-group btn-group-xs pull-right">
               <a class="save btn btn-default"
+                  title="Télécharge la sauvegarde."
                   href="{{ archive['url'] }}">
                 <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
               </a>
               <a class="save btn btn-group-sm btn-primary"
+                title="Restaure la sauvegarde."
                 href="?view=admin&action=restore&name={{ archive['filename'] }}">
                 <i class="icon-circle-arrow-up icon-white"></i>
                 <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
               </a>
-              <a class="delete btn btn-group-sm btn-danger "
+              <a class="delete btn btn-group-sm btn-danger"
+                  title="Supprime la sauvegarde."
                   onclick="return(confirm('Êtes-vous sûr de vouloir supprimer l\'archive : {{ archive['filename'] }} ?'));"
                   href="?view=admin&action=deleteArchive&name={{ archive['filename'] }}">
                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>

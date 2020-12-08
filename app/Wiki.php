@@ -162,23 +162,6 @@ class Wiki implements InterfaceObject
         return $archiveFilename;
     }
 
-    /**
-     * [updateConfiguration description]
-     * @return [type] [description]
-     */
-    public function updateConfiguration()
-    {
-        $this->config['mysql_host'] = $this->fermeConfig['db_host'];
-        $this->config['mysql_database'] = $this->fermeConfig['db_name'];
-        $this->config['mysql_user'] = $this->fermeConfig['db_user'];
-        $this->config['mysql_password'] = $this->fermeConfig['db_password'];
-        $this->config['base_url'] = $this->fermeConfig['base_url'];
-        $this->config['base_url'] .= $this->path;
-        $this->config['base_url'] .= '/wakka.php?wiki=';
-        $this->config->write($this->path . "/wakka.config.php");
-        return $this->config;
-    }
-
     public function upgrade($srcPath)
     {
         // Delete wiki files

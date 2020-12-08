@@ -50,15 +50,6 @@ class Ferme
         );
     }
 
-    public function updateConfiguration($name)
-    {
-        $this->log->write(
-            $this->users->whoIsLogged(),
-            "Mise a jour de configuration de '$name'"
-        );
-        $this->wikis[$name]->updateConfiguration();
-    }
-
     public function checkInstallation()
     {
         if (!is_dir($this->config['ferme_path'])) {
