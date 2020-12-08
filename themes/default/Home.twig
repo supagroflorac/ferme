@@ -95,16 +95,6 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="themes/default/js/jquery.tablesorter.min.js"></script>
   <script type="text/JavaScript">
-    function changeThumb(){
-      var thumb = document
-            .getElementById('theme')
-            .options[document
-            .getElementById('theme')
-            .selectedIndex]
-            .getAttribute('thumb');
-      document.getElementById('thumb').src = thumb;
-    }
-
     function lookup(inputString) {
       $.get("", {
         view: "ajax",
@@ -120,11 +110,10 @@
     }
 
     function initTableSorter() {
-      $("#listeWikis").tablesorter( { sortList: [[0,0]] } );
+       $("#listeWikis").tablesorter( { sortList: [[0,0]] } );
     }
 
     $(document).ready(function() {
-      changeThumb();
       initTableSorter();
       $("#filter").keyup( function() {
         lookup($(this).val())
