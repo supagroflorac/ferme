@@ -65,7 +65,7 @@
                 <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
               </a>
               <a  class="save btn btn-success"
-                  title="Archive le wiki"
+                  title="Sauvegarde le wiki"
                   href="?view=admin&action=archive&name={{ wiki['name'] }}">
                 <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
               </a>
@@ -80,7 +80,7 @@
                 <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
               </a>
               <a  class="delete btn btn-danger"
-                  title="Supprime le wiki"
+                  title="Sauvergarde puis supprime le wiki"
                   onclick="return(confirm('Etes-vous sûr de vouloir supprimer le wiki : {{ wiki['name'] }} ?'));"
                   href="?view=admin&action=delete&name={{ wiki['name'] }}">
                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
@@ -95,13 +95,13 @@
   </div>
 
   <div id="archives" class="container">
-    <h2>Liste des archives</h2>
+    <h2>Liste des sauvergardes</h2>
     <table id="listeArchives"
       class="wiki-list table table-hover table-condensed tablesorter">
       <thead>
         <tr>
           <th>Nom</th>
-          <th>Archivé le</th>
+          <th>Sauvegardé le</th>
           <th>Poid</th>
           <th></th>
         </tr>
