@@ -32,8 +32,8 @@ build-package:
 	@for file in ${PACKAGE_FILES_TO_REMOVE}; do \
 		rm -rf ${PACKAGE_DIR}/${YESWIKI_VERSION}/$$file; \
 	done
-	@printf "patching YesWiki (Cookies)"
-	patch -i patch/yeswiki_cookie.diff ${PACKAGE_DIR}/${YESWIKI_VERSION}/includes/YesWikiInit.php
+	@printf "patching YesWiki (Cookies)\n"
+	@patch -i patch/yeswiki_cookie.diff ${PACKAGE_DIR}/${YESWIKI_VERSION}/includes/YesWikiInit.php
 
 clean:
 	@printf "Deleting package...\n"
