@@ -1,0 +1,47 @@
+#!/usr/bin/env php
+<?php
+
+namespace Ferme;
+
+if (php_sapi_name() !== 'cli') {
+    print('CLI only !');
+    exit(1);
+}
+
+if (!is_dir(__DIR__ . '/../vendor')) {
+    print('Vous devez executer "composer install" dans le dossier de la Ferme.');
+    exit;
+}
+include_once __DIR__ . '/../vendor/autoload.php';
+
+if (!is_file(__DIR__ . '/../ferme.config.php')) {
+    throw new \Exception(
+        'Le fichier de configuration est absent.',
+        1
+    );
+}
+$config = new Configuration(__DIR__ . '/../ferme.config.php');
+
+try {
+    $ferme = new Ferme($config);
+} catch (\Exception $e) {
+    print('Erreur fatale (problème de configuration ?)<br />');
+    print($e->getMessage());
+    exit(1);
+}
+
+try {
+    $ferme->checkInstallation();
+} catch (\Exception $e) {
+    print($e->getMessage());
+    exit(1);
+}
+
+$ferme->wikis->load();
+
+foreach($ferme->wikis as $wiki) {
+    $wikiAdminPassword = \Ferme\Password::random(12);
+    $wiki->setPassword("WikiAdmin", md5($wikiAdminPassword));
+    $mail = new \Ferme\Mails\MailResetWikiAdminPassword($config, $wiki, $wikiAdminPassword);
+    $mail->send();
+}
