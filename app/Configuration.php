@@ -1,10 +1,12 @@
 <?php
+
 namespace Ferme;
 
-class Configuration implements \ArrayAccess
+use ArrayAccess;
+
+class Configuration implements ArrayAccess
 {
     private $config;
-    private $file;
 
     /**
      * [__construct description]
@@ -12,19 +14,20 @@ class Configuration implements \ArrayAccess
      */
     public function __construct($file)
     {
-        $this->file = $file;
         $this->config = array();
 
-        if(is_file($file)) {
+        if (is_file($file)) {
             include $file;
         }
 
         if (isset($wakkaConfig)) {
             $this->config = $wakkaConfig;
+            return;
         }
 
         if (isset($config)) {
             $this->config = $config;
+            return;
         }
     }
 

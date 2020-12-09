@@ -1,7 +1,13 @@
 <?php
+
 namespace Ferme;
 
-abstract class Collection implements \ArrayAccess, \Iterator, \Countable
+use Exception;
+use ArrayAccess;
+use Iterator;
+use Countable;
+
+abstract class Collection implements ArrayAccess, Iterator, Countable
 {
     protected $list = null;
 
@@ -22,7 +28,7 @@ abstract class Collection implements \ArrayAccess, \Iterator, \Countable
     public function delete($key)
     {
         if (!isset($this->list[$key])) {
-            throw new \Exception(
+            throw new Exception(
                 "Impossible de supprimer l'élément' $key. Il n'existe pas.",
                 1
             );

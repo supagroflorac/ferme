@@ -12,7 +12,7 @@ class Home extends TwigView
      * Get all informations needed by the view
      * @return array needed informations for the view
      */
-    protected function compileInfos()
+    protected function compileInfos(): array
     {
         $infos = array();
 

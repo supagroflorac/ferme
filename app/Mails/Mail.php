@@ -2,6 +2,9 @@
 
 namespace Ferme\Mails;
 
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
+
 abstract class Mail
 {
     abstract protected function getTemplate();
@@ -15,8 +18,8 @@ abstract class Mail
     public function send()
     {
         $themePath = 'themes/' . $this->config['template'] . '/mails/';
-        $loader = new \Twig\Loader\FilesystemLoader($themePath);
-        $twig = new \Twig\Environment($loader);
+        $loader = new FilesystemLoader($themePath);
+        $twig = new Environment($loader);
         $data = $this->getData();
         $content = $twig->render($this->getTemplate(), $data);
 

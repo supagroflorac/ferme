@@ -30,6 +30,6 @@ class Ls extends Action
 
     public function usage()
     {
-        printf("\nNo parameters.\n");
+        printf("No parameters.\n");
     }
 }

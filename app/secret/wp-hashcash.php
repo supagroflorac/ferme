@@ -32,19 +32,17 @@ function hashcash_field_value()
 {
     if (function_exists('file_get_contents')) {
         return file_get_contents(HASHCASH_SECRET_FILE);
-    } else {
-        $fp = fopen(HASHCASH_SECRET_FILE, 'r');
-        $data = fread($fp, @filesize(HASHCASH_SECRET_FILE));
-        fclose($fp);
-        return $data;
     }
+
+    $fp = fopen(HASHCASH_SECRET_FILE, 'r');
+    $data = fread($fp, filesize(HASHCASH_SECRET_FILE));
+    fclose($fp);
+    return $data;
 }
 
 // Returns a phrase representing the product
 function hashcash_verbage()
 {
-
     $phrase = 'Protection anti-spam active';
-
     return $phrase;
 }

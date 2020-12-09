@@ -1,5 +1,9 @@
 <?php
+
 namespace Ferme;
+
+use Ferme\Configuration;
+use Exception;
 
 /**
  * Classe UserController
@@ -16,13 +20,13 @@ class UserController
      * Contient la configuration de la ferme.
      * @var Configuration
      */
-    private $configuration;
+    private Configuration $configuration;
 
     /**
      * Constructeur
      * @param Configuration $configuration Contient la configuration de la ferme.
      */
-    public function __construct($configuration)
+    public function __construct(Configuration $configuration)
     {
         $this->configuration = $configuration;
     }
@@ -33,11 +37,12 @@ class UserController
      * @param  string $password mot de passe a tester
      * @return bool             Vrai si la connexion a réussie, faux sinon.
      */
-    public function login($username, $password)
+    public function login(string $username, string $password): bool
     {
         $listUsers = $this->configuration['users'];
         foreach ($listUsers as $validUsername => $hash) {
-            if (($validUsername == $username)
+            if (
+                $validUsername === $username
                 and password_verify($password, $hash)
             ) {
                 $_SESSION['username'] = $username;
@@ -64,9 +69,10 @@ class UserController
      * Détermine si un utilisateur est connecté
      * @return boolean Vrai si un utilisateur est connecté, faux sinon.
      */
-    public function isLogged()
+    public function isLogged(): bool
     {
-        if (isset($_SESSION['username'])
+        if (
+            isset($_SESSION['username'])
             and isset($_SESSION['logged'])
             and true == $_SESSION
         ) {
@@ -79,7 +85,7 @@ class UserController
      * Retourne l'identifiant de l'utilisateur connecté.
      * @return string Le nom d'utilisateur si connecté, sinon vide
      */
-    public function whoIsLogged()
+    public function whoIsLogged(): string
     {
         if (isset($_SESSION['username'])) {
             return $_SESSION['username'];
@@ -90,7 +96,7 @@ class UserController
     public function isAuthorized()
     {
         if (!$this->isLogged()) {
-            throw new \Exception("Accès interdit", 1);
+            throw new Exception("Accès interdit", 1);
         }
     }
 }

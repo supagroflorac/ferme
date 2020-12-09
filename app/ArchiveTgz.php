@@ -1,5 +1,10 @@
 <?php
+
 namespace Ferme;
+
+use Ferme\Archive;
+use Ferme\Database;
+use PharData;
 
 class ArchiveTgz extends Archive
 {
@@ -9,7 +14,7 @@ class ArchiveTgz extends Archive
         $sqlFile = $fermeFolder . '/' . $name . '.sql';
         $archivePath = $archivesFolder . $this->filename;
 
-        $archivePhar = new \PharData($archivePath);
+        $archivePhar = new PharData($archivePath);
         $archivePhar->extractTo($fermeFolder);
         $database = new Database($dbConnexion);
         $database->import($sqlFile);

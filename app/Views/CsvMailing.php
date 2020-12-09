@@ -1,17 +1,17 @@
 <?php
+
 namespace Ferme\Views;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
+use Ferme\Views\View;
+use Ferme\CSV;
+
 class CsvMailing extends View
 {
     /**
      * Default name for CVS exported file
      * @var string
      */
-    const FILENAME = "mailing.csv";
+    public const FILENAME = "mailing.csv";
 
     /**
      * Show the view
@@ -19,7 +19,7 @@ class CsvMailing extends View
      */
     public function show()
     {
-        $csv = new \Ferme\CSV();
+        $csv = new CSV();
 
         if ($this->ferme->wikis->count() <= 0) {
             $csv->printFile($this::FILENAME);

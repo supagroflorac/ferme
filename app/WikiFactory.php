@@ -2,6 +2,11 @@
 
 namespace Ferme;
 
+use Ferme\Wiki;
+use Exception;
+use Files\File;
+use Ferme\Configuration;
+
 class Wikifactory
 {
     private $fermeConfig;
@@ -18,7 +23,7 @@ class Wikifactory
      * @param  string $name nom du wiki a charger.
      * @return  Wiki        Le wiki chargé.
      */
-    public function loadWikiFromExisting(string $name): \Ferme\Wiki
+    public function loadWikiFromExisting(string $name): Wiki
     {
         $wikiPath = $this->getWikiPath($name);
         $wiki = new Wiki($name, $wikiPath, $this->fermeConfig, $this->dbConnexion);
@@ -34,13 +39,13 @@ class Wikifactory
      * @param  string $description Description du Wiki
      * @return Wiki                Le wiki fraîchement installé
      */
-    public function createNewWiki(string $name, string $mail, string $description): \Ferme\Wiki
+    public function createNewWiki(string $name, string $mail, string $description): Wiki
     {
         $wikiPath = $this->getWikiPath($name);
 
         // Vérifie si le wiki n'existe pas déjà
         if (is_dir($wikiPath) || is_file($wikiPath)) {
-            throw new \Exception("Ce nom de wiki est déjà utilisé (${name})");
+            throw new Exception("Ce nom de wiki est déjà utilisé (${name})");
         }
         $this->copyWikiFiles($wikiPath);
         $this->setupWiki($name, $mail);
@@ -74,7 +79,7 @@ class Wikifactory
 
     private function deleteWikiFiles($wikiPath)
     {
-        $wikiFiles = new \Files\File($wikiPath);
+        $wikiFiles = new File($wikiPath);
         $wikiFiles->delete();
     }
 
@@ -82,7 +87,7 @@ class Wikifactory
     {
         $file = "${wikiPath}wakka.infos.php";
 
-        $wakkaInfo = new \Ferme\Configuration($file);
+        $wakkaInfo = new Configuration($file);
 
         $wakkaInfo['mail'] = $mail;
         $wakkaInfo['description'] = $description;
@@ -129,7 +134,7 @@ class Wikifactory
             or $this->checkIfWikiInstallError($curlOutput) === true
         ) {
             $this->deleteWikiFiles($this->getWikiPath($wikiName));
-            throw new \Exception("Problème lors de la configuration du nouveau wiki."
+            throw new Exception("Problème lors de la configuration du nouveau wiki."
                 . curl_error($curlSession));
         }
 
@@ -139,7 +144,7 @@ class Wikifactory
     private function copyWikiFiles($wikiPath)
     {
         $packagePath = "packages/" . $this->fermeConfig['source'] . "/";
-        $wikiSrcFiles = new \Files\File($packagePath);
+        $wikiSrcFiles = new File($packagePath);
         $wikiSrcFiles->copy($wikiPath);
     }
 }

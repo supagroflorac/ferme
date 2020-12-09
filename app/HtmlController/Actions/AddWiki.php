@@ -2,10 +2,12 @@
 
 namespace Ferme\HtmlController\Actions;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
+use Ferme\HtmlController\Actions\Action;
+use Ferme\WikiFactory;
+use Ferme\Password;
+use Ferme\Mails\MailCreateWiki;
+use Exception;
+
 class AddWiki extends Action
 {
     public function execute()
@@ -43,7 +45,7 @@ class AddWiki extends Action
         }
 
         try {
-            $wikiFactory = new \Ferme\WikiFactory(
+            $wikiFactory = new WikiFactory(
                 $this->ferme->config,
                 $this->ferme->dbConnexion
             );
@@ -54,14 +56,14 @@ class AddWiki extends Action
                 $this->cleanEntry($this->post['description'])
             );
             $this->ferme->wikis->add($wikiName, $wiki);
-            $wikiAdminPassword = \Ferme\Password::random(12);
+            $wikiAdminPassword = Password::random(12);
             $wiki->setPassword("WikiAdmin", md5($wikiAdminPassword));
             $wiki->addAdminUser(
                 "FermeAdmin",
                 $this->ferme->config['mail_from'],
                 $this->ferme->config['admin_password'],
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');
             return;
         }
@@ -72,7 +74,7 @@ class AddWiki extends Action
             'success'
         );
 
-        $mail = new \Ferme\Mails\MailCreateWiki($this->ferme->config, $wiki, $wikiAdminPassword);
+        $mail = new MailCreateWiki($this->ferme->config, $wiki, $wikiAdminPassword);
         $mail->send();
     }
 

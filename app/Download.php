@@ -1,5 +1,8 @@
 <?php
+
 namespace Ferme;
+
+use Exception;
 
 class Download
 {
@@ -12,7 +15,7 @@ class Download
         $this->path = $ferme->config['archives_path'];
 
         if (!file_exists($this->path . $this->name)) {
-            throw new \Exception("Le fichier n'existe pas.", 1);
+            throw new Exception("Le fichier n'existe pas.", 1);
         }
     }
 

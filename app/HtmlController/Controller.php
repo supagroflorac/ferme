@@ -2,6 +2,13 @@
 
 namespace Ferme\HtmlController;
 
+use Ferme\Views\AjaxListWikis;
+use Ferme\Download;
+use Ferme\Views\Authentification;
+use Ferme\Views\Administration;
+use Ferme\Views\CsvMailing;
+use Ferme\Views\Home;
+
 /**
  * Classe Controller
  *
@@ -49,7 +56,7 @@ class Controller
 
     private function ajax($get)
     {
-        $view = new \Ferme\Views\AjaxListWikis($this->ferme);
+        $view = new AjaxListWikis($this->ferme);
         if (isset($get['query']) and ($get['query'] === 'search')) {
             switch ($get['query']) {
                 case 'search':
@@ -72,7 +79,7 @@ class Controller
 
     private function download($download)
     {
-        $download = new \Ferme\Download($download, $this->ferme);
+        $download = new Download($download, $this->ferme);
         $download->serve();
     }
 
@@ -81,21 +88,21 @@ class Controller
         switch ($view) {
             case 'admin':
                 if (!$this->ferme->users->isLogged()) {
-                    $view = new \Ferme\Views\Authentification($this->ferme);
+                    $view = new Authentification($this->ferme);
                     $view->show();
                     break;
                 }
-                $view = new \Ferme\Views\Administration($this->ferme);
+                $view = new Administration($this->ferme);
                 $view->show();
                 break;
             case 'exportMailing':
                 if ($this->ferme->users->isLogged()) {
-                    $view = new \Ferme\Views\CsvMailing($this->ferme);
+                    $view = new CsvMailing($this->ferme);
                     $view->show();
                 }
                 break;
             default:
-                $view = new \Ferme\Views\Home($this->ferme);
+                $view = new Home($this->ferme);
                 $view->show();
                 break;
         }

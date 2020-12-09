@@ -2,15 +2,17 @@
 
 namespace Ferme;
 
-/**
- * Classe wiki
- *
- * gère les opération sur un wiki
- * @package Ferme
- * @author  Florestan Bredow <florestan.bredow@supagro.fr>
- * @version 0.1.1 (Git: $Id$)
- * @copyright 2013 Florestan Bredow
- */
+use Ferme\InterfaceObject;
+use PDO;
+use Ferme\Configuration;
+use Files\File;
+use DateTime;
+use Exception;
+use Ferme\Database;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use ZipArchive;
+
 class Wiki implements InterfaceObject
 {
     public $path;
@@ -27,7 +29,7 @@ class Wiki implements InterfaceObject
      * @param PDO           $dbConnexion connexion vers la base de donnée (déjà
      * établie)
      */
-    public function __construct($name, $path, $fermeConfig, $dbConnexion)
+    public function __construct(string $name, string $path, Configuration $fermeConfig, PDO $dbConnexion)
     {
         $this->name = $name;
         $this->path = $path;
@@ -49,12 +51,10 @@ class Wiki implements InterfaceObject
 
     /**
      * Calcule la taille occupée par les fichiers et la base de donnée du wiki
-     * @return array Liste des informations sur le wiki avec au moins la taille
-     * de la base de donnée et des fichiers
      */
-    public function getFilesDiskUsage()
+    public function getFilesDiskUsage(): int
     {
-        $file = new \Files\File($this->path . '/files');
+        $file = new File($this->path . '/files');
         return $file->diskUsage();
     }
 
@@ -64,7 +64,7 @@ class Wiki implements InterfaceObject
      * @return DateTime La date et l'heure à laquelle la dernière modification a
      *                  eu lieu.
      */
-    public function getLasPageModificationDateTime()
+    public function getLasPageModificationDateTime(): DateTime
     {
         $tablePages = $this->config['table_prefix'] . 'pages';
         // Binary sert ici a faire une comparaison sensible a la casse.
@@ -73,7 +73,7 @@ class Wiki implements InterfaceObject
         );
         $result = $query->fetchAll();
 
-        return new \DateTime($result[0]['Update_time']);
+        return new DateTime($result[0]['Update_time']);
     }
 
     /**
@@ -103,7 +103,7 @@ class Wiki implements InterfaceObject
         foreach ($tables as $tableName) {
             $sth = $database->prepare("DROP TABLE IF EXISTS " . $tableName);
             if (!$sth->execute()) {
-                throw new \Exception(
+                throw new Exception(
                     "Erreur lors de la suppression de la base de donnée",
                     1
                 );
@@ -111,7 +111,7 @@ class Wiki implements InterfaceObject
         }
 
         //Supprimer les fichiers
-        $wikiFiles = new \Files\File($fermePath . $this->config['wakka_name']);
+        $wikiFiles = new File($fermePath . $this->config['wakka_name']);
         $wikiFiles->delete();
     }
 
@@ -133,17 +133,17 @@ class Wiki implements InterfaceObject
         $database->export($sqlFile, $this->config['table_prefix']);
 
         // Création de l'archive
-        $archive = new \ZipArchive();
+        $archive = new ZipArchive();
 
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator(
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(
                 $wikiPath,
-                \RecursiveDirectoryIterator::SKIP_DOTS // Evite les repertoire .. et .
+                RecursiveDirectoryIterator::SKIP_DOTS // Evite les repertoire .. et .
             )
         );
 
-        if ($archive->open($archiveFilename, \ZipArchive::CREATE) !== true) {
-            throw new \Exception(
+        if ($archive->open($archiveFilename, ZipArchive::CREATE) !== true) {
+            throw new Exception(
                 "Erreur lors de la création de : \"$archiveFilename\".",
                 1
             );
@@ -168,11 +168,11 @@ class Wiki implements InterfaceObject
         $fileToKeep = array(
             '.', '..', 'wakka.config.php', 'wakka.infos.php', 'files', 'themes', 'custom'
         );
-
-        if ($res = opendir($this->path)) {
-            while (($filename = readdir($res)) !== false) {
+        $res = opendir($this->path);
+        if ($res !== false) {
+            while ($filename = readdir($res)) {
                 if (!in_array($filename, $fileToKeep)) {
-                    $file = new \Files\File($this->path . '/' . $filename);
+                    $file = new File($this->path . '/' . $filename);
                     $file->delete();
                 }
             }
@@ -180,10 +180,11 @@ class Wiki implements InterfaceObject
         }
 
         // Copies new files
-        if ($res = opendir($srcPath)) {
-            while (($filename = readdir($res)) !== false) {
+        $res = opendir($srcPath);
+        if ($res !== false) {
+            while ($filename = readdir($res)) {
                 if (!in_array($filename, $fileToKeep)) {
-                    $file = new \Files\File($srcPath . $filename);
+                    $file = new File($srcPath . $filename);
                     $file->copy($this->path . '/' . $filename);
                 }
             }
@@ -235,7 +236,7 @@ class Wiki implements InterfaceObject
         );
 
         if ($sth->execute($values) === false) {
-            throw new \Exception(
+            throw new Exception(
                 "Impossible de changer le mot de passe de ${username}",
                 1
             );
@@ -308,7 +309,7 @@ class Wiki implements InterfaceObject
         );
 
         if ($sth->execute($values) === false) {
-            throw new \Exception(
+            throw new Exception(
                 "Impossible de créer l'utilisateur ${username}. Existe t'il déjà ?",
                 1
             );
@@ -337,7 +338,7 @@ class Wiki implements InterfaceObject
         );
 
         if ($sth->execute($values) === false) {
-            throw new \Exception(
+            throw new Exception(
                 "Erreur lors de l'ajout de ${username} au groupe ${groupname}.",
                 1
             );
@@ -390,7 +391,7 @@ class Wiki implements InterfaceObject
         );
 
         if ($sth->execute($values) === false) {
-            throw new \Exception(
+            throw new Exception(
                 "Ne peut récuperer la liste des membres du groupe ${groupname}. Le groupe existe t'il ?",
                 1
             );

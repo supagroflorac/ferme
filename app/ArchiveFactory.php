@@ -1,7 +1,13 @@
 <?php
+
 namespace Ferme;
 
-class ArchiveFactory {
+use Exception;
+use Ferme\ArchiveTgz;
+use Ferme\ArchiveZip;
+
+class ArchiveFactory
+{
     public function __construct($config)
     {
         $this->config = $config;
@@ -25,11 +31,9 @@ class ArchiveFactory {
         }
 
         if (!isset($archive)) {
-          throw new \Exception("Type d'archive none reconnu : $filename", 1);
+            throw new Exception("Type d'archive none reconnu : $filename", 1);
         }
 
         return $archive;
     }
-
-
 }

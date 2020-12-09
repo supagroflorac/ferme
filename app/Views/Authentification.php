@@ -1,4 +1,5 @@
 <?php
+
 namespace Ferme\Views;
 
 /**
@@ -11,7 +12,7 @@ class Authentification extends TwigView
      * Get all informations needed by the view
      * @return array needed informations for the view
      */
-    protected function compileInfos()
+    protected function compileInfos(): array
     {
         // Do nothing, all necessary data are already added by class TwigView
         return array();

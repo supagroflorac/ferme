@@ -2,6 +2,8 @@
 
 namespace Ferme\HtmlController\Actions;
 
+use Exception;
+
 /**
  * @author Florestan Bredow <florestan.bredow@supagro.fr>
  * @link http://www.phpdoc.org/docs/latest/index.html
@@ -17,9 +19,9 @@ class DeleteArchive extends Action
         }
 
         try {
-            $this->users->isAuthorized();
+            $this->ferme->users->isAuthorized();
             $this->ferme->deleteArchive($this->get['name']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->ferme->alerts->add($e->getMessage(), 'error');
             return;
         }

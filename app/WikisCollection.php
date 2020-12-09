@@ -1,5 +1,10 @@
 <?php
+
 namespace Ferme;
+
+use Ferme\Collection;
+use Ferme\WikiFactory;
+use RecursiveDirectoryIterator;
 
 class WikisCollection extends Collection
 {
@@ -26,9 +31,9 @@ class WikisCollection extends Collection
     {
         $fermePath = $this->config['ferme_path'];
         $wikiFactory = new WikiFactory($this->config, $this->dbConnexion);
-        $wikisList = new \RecursiveDirectoryIterator(
+        $wikisList = new RecursiveDirectoryIterator(
             $fermePath,
-            \RecursiveDirectoryIterator::SKIP_DOTS
+            RecursiveDirectoryIterator::SKIP_DOTS
         );
 
         foreach ($wikisList as $wikiPath) {

@@ -40,8 +40,15 @@ try {
 $ferme->wikis->load();
 
 foreach($ferme->wikis as $wiki) {
-    $wikiAdminPassword = \Ferme\Password::random(12);
-    $wiki->setPassword("WikiAdmin", md5($wikiAdminPassword));
-    $mail = new \Ferme\Mails\MailResetWikiAdminPassword($config, $wiki, $wikiAdminPassword);
-    $mail->send();
+    printf($wiki->name . " : ");
+    try {
+        $wikiAdminPassword = \Ferme\Password::random(12);
+        $wiki->setPassword("WikiAdmin", md5($wikiAdminPassword));
+        $mail = new \Ferme\Mails\MailResetWikiAdminPassword($config, $wiki, $wikiAdminPassword);
+        $mail->send();
+    } catch (Exception $e) {
+        printf("Error\n");
+        continue;
+    }
+    printf("OK\n");
 }

@@ -1,5 +1,11 @@
 <?php
+
 namespace Ferme\Views;
+
+use Twig_Environment;
+use Ferme\Ferme;
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
 
 /**
  * @author Florestan Bredow <florestan.bredow@supagro.fr>
@@ -8,25 +14,25 @@ namespace Ferme\Views;
 abstract class TwigView extends View
 {
     /**
-     * @var \Twig_Environment
+     * @var Environment
      */
-    protected $twig;
+    protected Environment $twig;
 
     /**
      * Get all informations needed by the view
      * @return array needed informations for the view
      */
-    abstract protected function compileInfos();
+    abstract protected function compileInfos(): array;
 
     /**
      * Constructor
-     * @param \Ferme\Ferme $ferme reference to model.
+     * @param Ferme $ferme reference to model.
      */
-    public function __construct($ferme)
+    public function __construct(Ferme $ferme)
     {
         parent::__construct($ferme);
-        $loader = new \Twig\Loader\FilesystemLoader($this->getThemePath());
-        $this->twig = new \Twig\Environment($loader);
+        $loader = new FilesystemLoader($this->getThemePath());
+        $this->twig = new Environment($loader);
     }
 
     /**
@@ -106,10 +112,14 @@ abstract class TwigView extends View
     private function getFiles($path)
     {
         $fileArray = array();
-        if ($handle = opendir($path)) {
-            while (false !== ($entry = readdir($handle))) {
+        $handle = opendir($path);
+        if ($handle !== false) {
+            while ($entry = readdir($handle)) {
                 $entryPath = $path . $entry;
-                if ("." != $entry && ".." != $entry && is_file($entryPath)
+                if (
+                    "." != $entry
+                    and ".." != $entry
+                    and is_file($entryPath)
                 ) {
                     $fileArray[] = $entryPath;
                 }
@@ -124,7 +134,7 @@ abstract class TwigView extends View
      * @param  array  $infos Array to complete
      * @return array
      */
-    private function addUserInfos(&$infos)
+    private function addUserInfos(&$infos): array
     {
         $infos = array_merge(
             $infos,

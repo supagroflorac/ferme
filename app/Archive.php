@@ -1,5 +1,8 @@
 <?php
+
 namespace Ferme;
+
+use Exception;
 
 class Archive implements InterfaceObject
 {
@@ -31,6 +34,7 @@ class Archive implements InterfaceObject
      */
     public function getInfos()
     {
+        $tabInfos = array();
         $tabInfos['name'] = substr($this->filename, 0, -16);
         $tabInfos['filename'] = $this->filename;
         $strDate = substr($this->filename, -16, 12);
@@ -64,7 +68,7 @@ class Archive implements InterfaceObject
     public function delete()
     {
         if (unlink($this->config['archives_path'] . $this->filename) === false) {
-            throw new \Exception('Impossible de supprimer l\'archive', 1);
+            throw new Exception('Impossible de supprimer l\'archive', 1);
         }
     }
 

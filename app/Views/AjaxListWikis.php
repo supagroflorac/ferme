@@ -1,5 +1,8 @@
 <?php
+
 namespace Ferme\Views;
+
+use Ferme\Views\TwigView;
 
 /**
  * @author Florestan Bredow <florestan.bredow@supagro.fr>
@@ -22,7 +25,7 @@ class AjaxListWikis extends TwigView
      * Get all informations needed by the view
      * @return array needed informations for the view
      */
-    protected function compileInfos()
+    protected function compileInfos(): array
     {
         $infos = array();
 

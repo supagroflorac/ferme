@@ -1,5 +1,11 @@
 <?php
+
 namespace Ferme;
+
+use Ferme\Archive;
+use Ferme\Database;
+use ZipArchive;
+use Exception;
 
 class ArchiveZip extends Archive
 {
@@ -9,12 +15,12 @@ class ArchiveZip extends Archive
         $sqlFile = $fermeFolder . '/' . $name . '.sql';
         $archivePath = $archivesFolder . $this->filename;
 
-        $archive = new \ZipArchive;
+        $archive = new ZipArchive();
         if ($archive->open($archivePath) === false) {
-          throw new \Exception(
-            "Impossible d'ouvrir l'archive : $this->filename.",
-            1
-          );
+            throw new Exception(
+                "Impossible d'ouvrir l'archive : $this->filename.",
+                1
+            );
         };
 
         $archive->extractTo($fermeFolder);

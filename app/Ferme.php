@@ -2,6 +2,17 @@
 
 namespace Ferme;
 
+use Exception;
+use Ferme\UserController;
+use Ferme\WikisCollection;
+use Ferme\ArchivesCollection;
+use Ferme\Log;
+use Ferme\Alerts;
+use Ferme\ArchiveFactory;
+use Ferme\WikiFactory;
+use PDO;
+use PDOException;
+
 class Ferme
 {
     public $config;
@@ -54,7 +65,7 @@ class Ferme
     {
         if (!is_dir($this->config['ferme_path'])) {
             if (!mkdir($this->config['ferme_path'], 0777, true)) {
-                throw new \Exception(
+                throw new Exception(
                     "Le dossier d'installation des wiki ("
                         . $this->config['ferme_path']
                         . ") ne peut être créé.",
@@ -65,7 +76,7 @@ class Ferme
 
         if (!is_dir($this->config['archives_path'])) {
             if (!mkdir($this->config['archives_path'], 0777, true)) {
-                throw new \Exception(
+                throw new Exception(
                     "Le dossier des archives ("
                     . $this->config['archives_path']
                     . ") ne peut être créé.",
@@ -106,7 +117,7 @@ class Ferme
         $wikiName = $archive->getInfos()['name'];
 
         if ($this->wikis->exist($wikiName)) {
-            throw new \Exception("Un wiki de ce nom ($wikiName) existe déjà.");
+            throw new Exception("Un wiki de ce nom ($wikiName) existe déjà.");
         }
 
         $this->log->write(
@@ -125,7 +136,7 @@ class Ferme
 
     /**
      * Établis la connexion a la base de donnée si ce n'est pas déjà fait.
-     * @return \PDO la connexion a la base de donnée
+     * @return PDO la connexion a la base de donnée
      */
     private function dbConnect()
     {
@@ -133,14 +144,14 @@ class Ferme
         $dsn .= 'dbname=' . $this->config['db_name'] . ';';
 
         try {
-            $this->dbConnexion = new \PDO(
+            $this->dbConnexion = new PDO(
                 $dsn,
                 $this->config['db_user'],
                 $this->config['db_password']
             );
             return $this->dbConnexion;
-        } catch (\PDOException $e) {
-            throw new \Exception(
+        } catch (PDOException $e) {
+            throw new Exception(
                 "Impossible de se connecter à la base de donnée : "
                 . $e->getMessage(),
                 1
