@@ -1,6 +1,6 @@
 <?php
 
-namespace Ferme;
+namespace Ferme\Mails;
 
 class MailCreateWiki extends Mail
 {

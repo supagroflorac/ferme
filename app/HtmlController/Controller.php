@@ -89,8 +89,10 @@ class Controller
                 $view->show();
                 break;
             case 'exportMailing':
-                $view = new \Ferme\Views\CsvMailing($this->ferme);
-                $view->show();
+                if ($this->ferme->users->isLogged()) {
+                    $view = new \Ferme\Views\CsvMailing($this->ferme);
+                    $view->show();
+                }
                 break;
             default:
                 $view = new \Ferme\Views\Home($this->ferme);

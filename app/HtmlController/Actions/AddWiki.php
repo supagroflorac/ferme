@@ -72,7 +72,7 @@ class AddWiki extends Action
             'success'
         );
 
-        $mail = new \Ferme\MailCreateWiki($this->ferme->config, $wiki, $wikiAdminPassword);
+        $mail = new \Ferme\Mails\MailCreateWiki($this->ferme->config, $wiki, $wikiAdminPassword);
         $mail->send();
     }
 
