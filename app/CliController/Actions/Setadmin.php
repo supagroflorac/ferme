@@ -57,7 +57,7 @@ class Setadmin extends Action
         $wiki = $this->ferme->wikis[$wikiName];
 
         try {
-            if ($wiki->isUserExist($userName)) {
+            if (!$wiki->isUserExist($userName)) {
                 $wiki->addAdminUser($userName, $mail, $md5Password);
                 print("OK\n");
                 return;
