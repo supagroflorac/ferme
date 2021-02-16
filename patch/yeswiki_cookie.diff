@@ -1,6 +1,6 @@
---- packages/cercopitheque/includes/YesWikiInit.php	2020-12-07 17:53:02.728244472 +0100
-+++ packages/cercopitheque/includes/YesWikiInit.php	2020-12-07 17:53:12.971625201 +0100
-@@ -267,7 +267,7 @@
+--- packages/cercopitheque/includes/YesWikiInit.php.old	2021-02-16 11:17:50.002000000 +0100
++++ packages/cercopitheque/includes/YesWikiInit.php	2021-02-16 11:19:09.108418435 +0100
+@@ -267,14 +267,18 @@
          // configuration du cookie de session
          // determine le chemin pour les cookies
          $a = parse_url($this->config['base_url']);
@@ -9,3 +9,16 @@
  
          // Fixe la gestion des cookie sous les OS utilisant le \ comme separteur de chemin
          $CookiePath = str_replace('\\', '/', $CookiePath);
+ 
+         // ajoute un '/' terminal sauf si on est a la racine web
+-        if ($CookiePath != '/') {
+-            $CookiePath .= '/';
++        // ajoute un '/' si on est a la racine web
++        if (
++            empty($CookiePath)
++            or !empty($this->config['global_cookie_path'])
++        ) {
++            $CookiePath = '/';
+         }
+ 
+         // test if session exists, because the wiki object is instanciated for every plugin
