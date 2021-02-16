@@ -3,6 +3,11 @@
 
 namespace Ferme;
 
+use Exception;
+use Ferme\CliController\Controller;
+use Ferme\Ferme;
+use Ferme\Configuration;
+
 if (php_sapi_name() !== 'cli') {
     print('CLI only !');
     exit(1);
@@ -10,32 +15,24 @@ if (php_sapi_name() !== 'cli') {
 
 if (!is_dir(__DIR__ . '/../vendor')) {
     print('Vous devez executer "composer install" dans le dossier de la Ferme.');
-    exit;
+    exit(1);
 }
 include_once __DIR__ . '/../vendor/autoload.php';
 
 if (!is_file(__DIR__ . '/../ferme.config.php')) {
-    throw new \Exception(
-        'Le fichier de configuration est absent.',
-        1
-    );
+    print('Le fichier de configuration est absent.');
+    exit(1);
 }
-$config = new Configuration(__DIR__ . '/../ferme.config.php');
 
 try {
+    $config = new Configuration(__DIR__ . '/../ferme.config.php');
     $ferme = new Ferme($config);
-} catch (\Exception $e) {
-    print('Erreur fatale (problème de configuration ?)<br />');
-    print($e->getMessage());
-    exit(1);
-}
-
-try {
     $ferme->checkInstallation();
-} catch (\Exception $e) {
+} catch (Exception $e) {
+    print('Erreur fatale (problème de configuration ?)\n');
     print($e->getMessage());
     exit(1);
 }
 
-$controller = new \Ferme\CliController\Controller($ferme);
+$controller = new Controller($ferme);
 exit($controller->run($argv));

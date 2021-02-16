@@ -26,9 +26,9 @@ switch ($type) {
         $n = floor($val / $inc);
         $r = $val % $inc;
 
-        $js .= "var $eax = $inc; ";
+        $js .= "var ${eax} = ${inc}; ";
         for ($i = 0; $i < $n - 1; $i++) {
-            $js .= "$eax += $inc; ";
+            $js .= "${eax} += ${inc}; ";
         }
 
         $js .= "$eax += $r; ";
@@ -49,16 +49,16 @@ switch ($type) {
 
         $val = hashcash_field_value();
         $binval = strrev(base_convert($val, 10, 2));
-        $js .= "var $eax = \"$binval\"; ";
-        $js .= "var $ebx = 0; ";
-        $js .= "var $ecx = 0; ";
-        $js .= "while($ecx < $eax.length){ ";
-        $js .= "if($eax.charAt($ecx) == \"1\") { ";
-        $js .= "$ebx += Math.pow(2, $ecx); ";
+        $js .= "var ${eax} = \"${binval}\"; ";
+        $js .= "var ${ebx} = 0; ";
+        $js .= "var ${ecx} = 0; ";
+        $js .= "while(${ecx} < ${eax}.length){ ";
+        $js .= "if(${eax}.charAt(${ecx}) == \"1\") { ";
+        $js .= "${ebx} += Math.pow(2, ${ecx}); ";
         $js .= "} ";
-        $js .= "$ecx++; ";
+        $js .= "${ecx}++; ";
         $js .= "} ";
-        $js .= "return $ebx; ";
+        $js .= "return ${ebx}; ";
 
         break;
 
@@ -68,7 +68,7 @@ switch ($type) {
         $val = hashcash_field_value();
         $sqrt = floor(sqrt($val));
         $r = $val - ($sqrt * $sqrt);
-        $js .= "return $sqrt * $sqrt + $r; ";
+        $js .= "return ${sqrt} * ${sqrt} + ${r}; ";
         break;
 
     /* Sum of random numbers to the final value:
@@ -144,7 +144,7 @@ $libs .= $data_name . '[i]>>>16 & 0xFF, ' . $data_name . '[i]>>>24 & 0xFF); } ';
 $libs .= "return eval(a.join('')); ";
 
 // call libs function
-$libs .= "} $libs_name();";
+$libs .= "} ${libs_name}();";
 
 // return code
 echo $libs;
