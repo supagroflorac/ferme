@@ -5,7 +5,7 @@ SHELL := bash
 
 PACKAGE_DIR := packages
 YESWIKI_VERSION := cercopitheque
-YESWIKI_RELEASE := 2021-01-29-1
+YESWIKI_RELEASE := 2021-02-17-1
 YESWIKI_ZIPFILE := https://repository.yeswiki.net/${YESWIKI_VERSION}/yeswiki-${YESWIKI_VERSION}-${YESWIKI_RELEASE}.zip
 TMP_FILE := /tmp/yeswiki-${YESWIKI_VERSION}-${YESWIKI_RELEASE}.zip
 PACKAGE_FILES_TO_REMOVE := $(shell cat .package_cleaning)
