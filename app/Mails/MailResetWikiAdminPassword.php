@@ -20,7 +20,7 @@ class MailResetWikiAdminPassword extends Mail
             'url' => $this->wiki->getInfos()['url'],
             'to' => $this->wiki->getInfos()['mail'],
             'from' => $this->config['mail_from'],
-            'subject' => 'Installation du wiki ' . $this->wiki->name,
+            'subject' => 'Mot de passe du wiki ' . $this->wiki->name,
             'wikiAdminPassword' => $this->wikiAdminPassword,
             'listContacts' => $this->config['contacts']
         );

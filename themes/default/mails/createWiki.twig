@@ -1,3 +1,4 @@
+
 Bonjour,
 
 Votre wiki : {{ name }} a été installé avec succès. Vous le trouverez à l'adresse : {{ url }}
@@ -8,9 +9,11 @@ Le compte administrateur :
 
 Nous vous recommandons de le changer et de choisir un mot de passe que vous n'utilisez pas ailleurs.
 
+{% if listContacts|length > 0 %}
 Pour toute information complémentaire n'hésitez pas à contacter :
 {% for name, mail in listContacts %}
  - {{ name }} : {{ mail }}
 {% endfor %}
+{% endif %}
 
 Cordialement.
