@@ -41,13 +41,26 @@ $ferme->wikis->load();
 
 foreach($ferme->wikis as $wiki) {
     printf($wiki->name . " : ");
+
+    // If the FermeAdmin account already exists, the migration has already been done.
+    if ($wiki->isUserExist("FermeAdmin")) {
+        printf("Already migrate\n");
+        continue;
+    }
+
     try {
         $wikiAdminPassword = \Ferme\Password::random(12);
         $wiki->setPassword("WikiAdmin", md5($wikiAdminPassword));
         $mail = new \Ferme\Mails\MailResetWikiAdminPassword($config, $wiki, $wikiAdminPassword);
         $mail->send();
+
+        $wiki->addAdminUser(
+            "FermeAdmin",
+            $ferme->config['mail_from'],
+            $ferme->config['admin_password'
+        ]);
     } catch (Exception $e) {
-        printf("Error\n");
+        printf("Error" . $e->getMessage() . "\n");
         continue;
     }
     printf("OK\n");
