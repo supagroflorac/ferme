@@ -345,6 +345,28 @@ class Wiki implements InterfaceObject
         }
     }
 
+    public function setUserEmail(string $username, string $email)
+    {
+        $database = $this->dbConnexion;
+        $table =  $this->name . "_users";
+
+        $sqlQuery = "UPDATE ${table} SET `email`=:mail WHERE `name`=:name LIMIT 1;";
+
+        $sth = $database->prepare($sqlQuery);
+
+        $values = array(
+            ':mail' => $email,
+            ':name' => $username,
+        );
+
+        if ($sth->execute($values) === false) {
+            throw new Exception(
+                "Impossible de changer l'adresse mail de ${username}.",
+                1
+            );
+        }
+    }
+
     /**
      * Récupère la liste des noms de tables dans la base de donnée pour ce Wiki.
      *

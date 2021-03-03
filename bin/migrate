@@ -39,6 +39,8 @@ try {
 
 $ferme->wikis->load();
 
+// Add FermeAdmin user and send new WikiAdmin password to wiki owner.
+printf("\nAdd FermeAdmin user and send WikiAdmin password : \n");
 foreach($ferme->wikis as $wiki) {
     printf($wiki->name . " : ");
 
@@ -65,3 +67,17 @@ foreach($ferme->wikis as $wiki) {
     }
     printf("OK\n");
 }
+
+// Update WikiAdmin email
+printf("\nUpdate WikiAdmin email : \n");
+foreach($ferme->wikis as $wiki) {
+    printf($wiki->name . " : set WikiAdmin mail : ");
+    try {
+        $wiki->setUserEmail('WikiAdmin', $wiki->infos['mail']);
+    } catch (Exception $e) {
+        printf("Error\n");
+        continue;
+    }
+    printf("OK\n");
+}
+
