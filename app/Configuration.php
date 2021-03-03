@@ -61,10 +61,10 @@ class Configuration implements ArrayAccess
      */
     public function write($file, $arrayName = "wakkaConfig")
     {
-        $content = "<?php\n";
+        $content = "<?php\n\n";
         $content .= "\$$arrayName = array(\n";
         foreach ($this->config as $key => $value) {
-            $content .= "\t\"" . $key . "\" => \"" . $value . "\",\n";
+            $content .= "    \"" . $key . "\" => \"" . $value . "\",\n";
         }
         $content .= ");\n";
         file_put_contents($file, $content);
