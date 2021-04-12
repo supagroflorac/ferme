@@ -367,6 +367,11 @@ class Wiki implements InterfaceObject
         }
     }
 
+    public function isUtf8()
+    {
+        return isset($this->config['db_charset']) and $this->config['db_charset'] === "utf8mb4";
+    }
+
     /**
      * Récupère la liste des noms de tables dans la base de donnée pour ce Wiki.
      *
