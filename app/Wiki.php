@@ -5,6 +5,7 @@ namespace Ferme;
 use Ferme\InterfaceObject;
 use PDO;
 use Ferme\Configuration;
+use Ferme\Page;
 use Files\File;
 use DateTime;
 use Exception;
@@ -18,7 +19,7 @@ class Wiki implements InterfaceObject
     public $path;
     public $name;
     private $fermeConfig;
-    private $dbConnexion;
+    public $dbConnexion;
     public $infos = null;
     private $config = null;
 
@@ -367,12 +368,11 @@ class Wiki implements InterfaceObject
         }
     }
 
-    /**
-     * Récupère la liste des noms de tables dans la base de donnée pour ce Wiki.
-     *
-     * @param $db
-     * @return mixed
-     */
+    public function isUtf8()
+    {
+        return isset($this->config['db_charset']) and $this->config['db_charset'] === "utf8mb4";
+    }
+
     private function getDBTablesList()
     {
         $database = $this->dbConnexion;

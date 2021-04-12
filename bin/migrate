@@ -137,15 +137,19 @@ foreach($ferme->wikis as $wiki) {
 }
 
 // Update db to UTF8
-/*foreach($ferme->wikis as $wiki) {
+printf("\nConvert to UTF8 : \n");
+foreach($ferme->wikis as $wiki) {
+    if ($wiki->isUtf8()) {
+        printf("Already UTF8\n");
+        continue;
+    }
+
     $wikiName = $wiki->name;
     $command = "cd wikis/${wikiName}; php handlers/page/dbutf8.php; cd -";
     printf("$wikiName : Update DB to UTF8 :  ");
-    $output = array();
-    if (exec($command, $output) === false) {
+    if (exec($command) === false) {
         printf("Error\n");
         continue;
     }
-    printf("OK\n");
-    print_r($output);
-}*/
+    printf("Converted\n");
+}
