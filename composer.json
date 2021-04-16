@@ -21,6 +21,7 @@
           "Ferme\\": "app",
           "Ferme\\Views\\": "app/Views",
           "Ferme\\Mails\\": "app/Mails",
+          "Ferme\\Wiki\\": "app/Wiki",
           "Ferme\\HtmlController\\": "app/HtmlController",
           "Ferme\\HtmlController\\Actions\\": "app/HtmlController/Actions",
           "Ferme\\CliController\\": "app/CliController",

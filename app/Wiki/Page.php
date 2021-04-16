@@ -1,8 +1,8 @@
 <?php
 
-namespace Ferme;
+namespace Ferme\Wiki;
 
-use Ferme\Wiki;
+use Ferme\Wiki\Wiki;
 use Exception;
 
 class Page

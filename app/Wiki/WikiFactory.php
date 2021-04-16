@@ -1,13 +1,13 @@
 <?php
 
-namespace Ferme;
+namespace Ferme\Wiki;
 
-use Ferme\Wiki;
+use Ferme\Wiki\Wiki;
 use Exception;
 use Files\File;
 use Ferme\Configuration;
 
-class Wikifactory
+class WikiFactory
 {
     private $fermeConfig;
     private $dbConnexion;

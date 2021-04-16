@@ -1,18 +1,18 @@
 <?php
 
-namespace Ferme;
+namespace Ferme\Wiki;
 
 use Ferme\InterfaceObject;
-use PDO;
 use Ferme\Configuration;
-use Ferme\Page;
+use Ferme\Database;
+use Ferme\Wiki\Page;
 use Files\File;
+use PDO;
 use DateTime;
 use Exception;
-use Ferme\Database;
+use ZipArchive;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
-use ZipArchive;
 
 class Wiki implements InterfaceObject
 {

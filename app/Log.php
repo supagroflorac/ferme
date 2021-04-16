@@ -1,16 +1,17 @@
 <?php
+
 namespace Ferme;
 
 class Log
 {
-    private $file = null;
+    private string $file = "";
 
-    public function __construct($file)
+    public function __construct(string $file)
     {
         $this->file = $file;
     }
 
-    public function write($user, $action)
+    public function write(string $user, string $action)
     {
         $date = date("Y-m-d G:i:s");
         file_put_contents(

@@ -3,7 +3,7 @@
 namespace Ferme\HtmlController\Actions;
 
 use Ferme\HtmlController\Actions\Action;
-use Ferme\WikiFactory;
+use Ferme\Wiki\WikiFactory;
 use Ferme\Password;
 use Ferme\Mails\MailCreateWiki;
 use Exception;

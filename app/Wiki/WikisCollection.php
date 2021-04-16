@@ -1,9 +1,9 @@
 <?php
 
-namespace Ferme;
+namespace Ferme\Wiki;
 
 use Ferme\Collection;
-use Ferme\WikiFactory;
+use Ferme\Wiki\WikiFactory;
 use RecursiveDirectoryIterator;
 
 class WikisCollection extends Collection

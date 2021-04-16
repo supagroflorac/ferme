@@ -2,8 +2,8 @@
 
 namespace Ferme\CliController\Actions;
 
-use Ferme\Page;
-use Ferme\Wiki;
+use Ferme\Wiki\Page;
+use Ferme\Wiki\Wiki;
 use RecursiveDirectoryIterator;
 
 class Forcepages extends Action

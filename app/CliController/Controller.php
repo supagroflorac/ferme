@@ -2,6 +2,8 @@
 
 namespace Ferme\CliController;
 
+use Ferme\Ferme;
+
 /**
  * Classe Controller
  *
@@ -15,7 +17,7 @@ class Controller
 {
     private $ferme;
 
-    public function __construct(\Ferme\Ferme $ferme)
+    public function __construct(Ferme $ferme)
     {
         $this->ferme = $ferme;
     }

@@ -4,12 +4,12 @@ namespace Ferme;
 
 use Exception;
 use Ferme\UserController;
-use Ferme\WikisCollection;
+use Ferme\Wiki\WikisCollection;
 use Ferme\ArchivesCollection;
 use Ferme\Log;
 use Ferme\Alerts;
 use Ferme\ArchiveFactory;
-use Ferme\WikiFactory;
+use Ferme\Wiki\WikiFactory;
 use PDO;
 use PDOException;
 
@@ -23,9 +23,6 @@ class Ferme
     public $dbConnexion;
     private $log;
 
-    /*************************************************************************
-     * constructor
-     * **********************************************************************/
     public function __construct($config)
     {
         $this->config = $config;
@@ -37,10 +34,7 @@ class Ferme
         $this->alerts = new Alerts();
     }
 
-    /*************************************************************************
-     * Gestion des Wikis
-     ************************************************************************/
-    public function delete($name)
+    public function delete(string $name)
     {
         $this->wikis->delete($name);
         $this->log->write(
@@ -49,7 +43,7 @@ class Ferme
         );
     }
 
-    public function upgrade($name)
+    public function upgrade(string $name)
     {
         $this->log->write(
             $this->users->whoIsLogged(),
@@ -86,10 +80,7 @@ class Ferme
         }
     }
 
-    /*************************************************************************
-     * Gestion des archives
-     ************************************************************************/
-    public function archiveWiki($name)
+    public function archiveWiki(string $name)
     {
         $this->log->write(
             $this->users->whoIsLogged(),
@@ -102,7 +93,7 @@ class Ferme
         $this->archives->add($archiveName, $archive);
     }
 
-    public function deleteArchive($name)
+    public function deleteArchive(string $name)
     {
         $this->log->write(
             $this->users->whoIsLogged(),
@@ -111,7 +102,7 @@ class Ferme
         $this->archives->remove($name);
     }
 
-    public function restore($name)
+    public function restore(string $name)
     {
         $archive = $this->archives[$name];
         $wikiName = $archive->getInfos()['name'];
@@ -129,16 +120,12 @@ class Ferme
         $this->wikis->add($wiki->name, $wiki);
     }
 
-    public function getWikiUpgradeSourcePath()
+    public function getWikiUpgradeSourcePath(): string
     {
         return "packages/" . $this->config['source'] . "/";
     }
 
-    /**
-     * Établis la connexion a la base de donnée si ce n'est pas déjà fait.
-     * @return PDO la connexion a la base de donnée
-     */
-    private function dbConnect()
+    private function dbConnect(): PDO
     {
         $dsn = 'mysql:host=' . $this->config['db_host'] . ';';
         $dsn .= 'dbname=' . $this->config['db_name'] . ';';

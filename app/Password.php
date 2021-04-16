@@ -2,15 +2,6 @@
 
 namespace Ferme;
 
-/**
- * Classe UserController
- *
- * gère les entrées ($_POST et $_GET)
- * @package Ferme
- * @author  Florestan Bredow <florestan.bredow@supagro.fr>
- * @version 0.0.1 (Git: $Id$)
- * @copyright 2020 Florestan Bredow
- */
 class Password
 {
     public static function random(int $length): string
