@@ -5,6 +5,7 @@ namespace Ferme\CliController\Actions;
 use Ferme\Wiki\Page;
 use Ferme\Wiki\Wiki;
 use RecursiveDirectoryIterator;
+use Exception;
 
 class Forcepages extends Action
 {
@@ -35,7 +36,7 @@ class Forcepages extends Action
         $this->ForcePagesForOneWiki($this->ferme->wikis[$wikiName], $pages);
     }
 
-    private function getPagesToForce() : array
+    private function getPagesToForce(): array
     {
         $pages = array();
 
@@ -56,8 +57,8 @@ class Forcepages extends Action
             foreach ($pages as $page) {
                 $page->saveToWiki($wiki);
             }
-        } catch (\Exception $e) {
-            printf("Error : $e->getMessage()\n");
+        } catch (Exception $e) {
+            printf("Error : {$e->getMessage()}\n");
             return;
         }
         printf("OK\n");
@@ -72,7 +73,7 @@ class Forcepages extends Action
 
     private function wikiDoNotExist(string $wikiName)
     {
-        print("\n$wikiName does not exist.\n\n");
+        print("\n{$wikiName} does not exist.\n\n");
     }
 
     public function usage()

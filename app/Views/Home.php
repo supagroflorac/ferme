@@ -2,68 +2,30 @@
 
 namespace Ferme\Views;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
 class Home extends TwigView
 {
-    /**
-     * Get all informations needed by the view
-     * @return array needed informations for the view
-     */
     protected function compileInfos(): array
     {
-        $infos = array();
-
-        $infos['wiki_name'] = '';
-        if (filter_has_var(INPUT_POST, 'wiki_name')) {
-            $infos['wiki_name'] = filter_input(
-                INPUT_POST,
-                'wiki_name',
-                FILTER_SANITIZE_STRING
-            );
-        }
-
-        $infos['description'] = '';
-        if (filter_has_var(INPUT_POST, 'description')) {
-            $infos['description'] = filter_input(
-                INPUT_POST,
-                'description',
-                FILTER_SANITIZE_STRING
-            );
-        }
-
-        $infos['mail'] = '';
-        if (filter_has_var(INPUT_POST, 'mail')) {
-            $infos['mail'] = filter_input(
-                INPUT_POST,
-                'mail',
-                FILTER_SANITIZE_STRING
-            );
-        }
-
-        $infos['list_wikis'] = $this->object2Infos(
-            $this->ferme->wikis->search()
+        return array(
+            'wiki_name' => $this->getInputPostVarOrEmpty('wiki_name'),
+            'description' => $this->getInputPostVarOrEmpty('description'),
+            'mail' => $this->getInputPostVarOrEmpty('mail'),
+            'list_wikis' => $this->object2Infos($this->ferme->wikis->search()),
+            'hashcash_url' => $this->HashCash(),
+            'welcome_text' => $this->ferme->config['welcome_text'],
         );
-
-        $infos['hashcash_url'] = $this->HashCash();
-
-        $infos['welcome_text'] = $this->ferme->config['welcome_text'];
-
-        return ($infos);
     }
 
-    /**
-     * Make hashcash URL
-     * @return string URL hashcash javascript
-     */
-    private function hashCash()
+    private function getInputPostVarOrEmpty(string $varname): string
     {
-        $hashcashUrl =
-        'app/wp-hashcash-js.php?siteurl='
-        . $this->ferme->config['base_url'];
+        if (filter_has_var(INPUT_POST, $varname)) {
+            return filter_input(INPUT_POST, $varname, FILTER_SANITIZE_STRING);
+        }
+        return "";
+    }
 
-        return $hashcashUrl;
+    private function hashCash(): string
+    {
+        return "app/wp-hashcash-js.php?siteurl={$this->ferme->config['base_url']}";
     }
 }

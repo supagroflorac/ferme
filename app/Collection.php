@@ -21,10 +21,6 @@ abstract class Collection implements ArrayAccess, Iterator, Countable
         $this->list[$key] = $object;
     }
 
-    /**
-     * Supprime un Wiki (Fichiers et base de données)
-     * @param  string $key nom du wiki a supprimer
-     */
     public function delete($key)
     {
         if (!isset($this->list[$key])) {

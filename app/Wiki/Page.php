@@ -4,6 +4,7 @@ namespace Ferme\Wiki;
 
 use Ferme\Wiki\Wiki;
 use Exception;
+use PDO;
 
 class Page
 {

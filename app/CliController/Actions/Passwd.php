@@ -2,10 +2,8 @@
 
 namespace Ferme\CliController\Actions;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
+use Exception;
+
 class Passwd extends Action
 {
     public const DESCRIPTION = "Set password for an existing user on a wiki";
@@ -29,15 +27,14 @@ class Passwd extends Action
             return;
         }
 
-        if (!$this->ferme->wikis[$wikiName]->isUserExist($userName))
-        {
+        if (!$this->ferme->wikis[$wikiName]->isUserExist($userName)) {
             print("\n$userName does not exist.\n\n");
             return;
         }
 
         try {
-            $this->ferme->wikis[$wikiName]->setPassword($userName, md5($password));
-        } catch (\Exception $e) {
+            $this->ferme->wikis[$wikiName]->setUserPassword($userName, md5($password));
+        } catch (Exception $e) {
             $error = $e->getMessage();
             printf("Error : $error\n");
             return;

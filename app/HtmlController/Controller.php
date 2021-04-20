@@ -8,26 +8,18 @@ use Ferme\Views\Authentification;
 use Ferme\Views\Administration;
 use Ferme\Views\CsvMailing;
 use Ferme\Views\Home;
+use Ferme\Ferme;
 
-/**
- * Classe Controller
- *
- * gère les entrées ($post et $get)
- * @package Ferme
- * @author  Florestan Bredow <florestan.bredow@supagro.fr>
- * @version 0.0.1 (Git: $Id$)
- * @copyright 2015 Florestan Bredow
- */
 class Controller
 {
-    private $ferme;
+    private Ferme $ferme;
 
-    public function __construct($ferme)
+    public function __construct(Ferme $ferme)
     {
         $this->ferme = $ferme;
     }
 
-    public function run($get, $post)
+    public function run(array $get, array $post)
     {
         $this->ferme->wikis->load();
         $this->ferme->archives->load();
@@ -54,10 +46,13 @@ class Controller
         $this->showHtml($view);
     }
 
-    private function ajax($get)
+    private function ajax(array $get)
     {
         $view = new AjaxListWikis($this->ferme);
-        if (isset($get['query']) and ($get['query'] === 'search')) {
+        if (
+            isset($get['query'])
+            and ($get['query'] === 'search')
+        ) {
             switch ($get['query']) {
                 case 'search':
                     $string = '*';
@@ -77,13 +72,13 @@ class Controller
         }
     }
 
-    private function download($download)
+    private function download(string $download)
     {
         $download = new Download($download, $this->ferme);
         $download->serve();
     }
 
-    private function showHtml($view)
+    private function showHtml(string $view)
     {
         switch ($view) {
             case 'admin':
@@ -108,7 +103,7 @@ class Controller
         }
     }
 
-    private function action($get, $post)
+    private function action(array $get, array $post)
     {
         $className = "Ferme\\HtmlController\Actions\\" . ucfirst($get['action']);
         if (!class_exists($className)) {

@@ -4,27 +4,15 @@ namespace Ferme\Views;
 
 use Ferme\Views\TwigView;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
 class AjaxListWikis extends TwigView
 {
     private $filter = "*";
 
-    /**
-     * define filter for search
-     * @param $string
-     */
     public function setFilter($filter)
     {
         $this->filter = $filter;
     }
 
-    /**
-     * Get all informations needed by the view
-     * @return array needed informations for the view
-     */
     protected function compileInfos(): array
     {
         $infos = array();

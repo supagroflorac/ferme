@@ -15,15 +15,15 @@ use PDOException;
 
 class Ferme
 {
-    public $config;
-    public $wikis;
-    public $archives;
-    public $alerts;
-    public $users;
-    public $dbConnexion;
-    private $log;
+    public Configuration $config;
+    public WikisCollection $wikis;
+    public ArchivesCollection $archives;
+    public Alerts $alerts;
+    public UserController $users;
+    public PDO $dbConnexion;
+    private Log $log;
 
-    public function __construct($config)
+    public function __construct(Configuration $config)
     {
         $this->config = $config;
         $this->dbConnect();
@@ -57,6 +57,7 @@ class Ferme
 
     public function checkInstallation()
     {
+        // TODO refactor (2 private functions)
         if (!is_dir($this->config['ferme_path'])) {
             if (!mkdir($this->config['ferme_path'], 0777, true)) {
                 throw new Exception(

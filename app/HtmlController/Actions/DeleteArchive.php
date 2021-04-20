@@ -4,18 +4,12 @@ namespace Ferme\HtmlController\Actions;
 
 use Exception;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
 class DeleteArchive extends Action
 {
     public function execute()
     {
         if (!isset($this->get['name'])) {
-            $this->ferme->alerts->add(
-                "Paramètres manquant pour la suppression de l'archive."
-            );
+            $this->ferme->alerts->add("Paramètres manquant pour la suppression de l'archive.");
         }
 
         try {
@@ -27,7 +21,7 @@ class DeleteArchive extends Action
         }
 
         $this->ferme->alerts->add(
-            "L'archive " . $this->get['name'] . " a été supprimée avec succès",
+            "L'archive {$this->get['name']} a été supprimée avec succès",
             'success'
         );
     }

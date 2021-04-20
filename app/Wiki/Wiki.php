@@ -5,7 +5,6 @@ namespace Ferme\Wiki;
 use Ferme\InterfaceObject;
 use Ferme\Configuration;
 use Ferme\Database;
-use Ferme\Wiki\Page;
 use Files\File;
 use PDO;
 use DateTime;
@@ -23,13 +22,6 @@ class Wiki implements InterfaceObject
     public $infos = null;
     private $config = null;
 
-    /**
-     * Constructeur
-     * @param string        $path         chemin vers le wiki
-     * @param Configuration $config       configuration de la ferme
-     * @param PDO           $dbConnexion connexion vers la base de donnée (déjà
-     * établie)
-     */
     public function __construct(string $name, string $path, Configuration $fermeConfig, PDO $dbConnexion)
     {
         $this->name = $name;
@@ -50,21 +42,12 @@ class Wiki implements InterfaceObject
         return true;
     }
 
-    /**
-     * Calcule la taille occupée par les fichiers et la base de donnée du wiki
-     */
-    public function getFilesDiskUsage(): int
+    public function getDiskUsage(): int
     {
         $file = new File($this->path . '/files');
         return $file->diskUsage();
     }
 
-    /**
-     * Retourne la date a laquelle le wiki a été modifié pour la dernière fois.
-     * (création ou modification de page)
-     * @return DateTime La date et l'heure à laquelle la dernière modification a
-     *                  eu lieu.
-     */
     public function getLasPageModificationDateTime(): DateTime
     {
         $tablePages = $this->config['table_prefix'] . 'pages';
@@ -77,12 +60,7 @@ class Wiki implements InterfaceObject
         return new DateTime($result[0]['Update_time']);
     }
 
-    /**
-     * Renvois les informations sur le wiki.
-     *
-     * @return array
-     */
-    public function getInfos()
+    public function getInfos(): array
     {
         if (is_null($this->infos)) {
             return $this->loadInfos();
@@ -90,37 +68,38 @@ class Wiki implements InterfaceObject
         return $this->infos;
     }
 
-    /**
-     * Supprime ce wiki.
-     */
     public function delete()
     {
-        $database = $this->dbConnexion;
-        $fermePath = $this->fermeConfig['ferme_path'];
+        $this->deleteDb();
+        $this->deleteFiles();
+    }
 
-        //Supprime la base de donnée
+    private function deleteFiles()
+    {
+        $wikiFiles = new File(
+            $this->fermeConfig['ferme_path'] . $this->config['wakka_name']
+        );
+        $wikiFiles->delete();
+    }
+
+    private function deleteDB()
+    {
         $tables = $this->getDBTablesList();
 
         foreach ($tables as $tableName) {
-            $sth = $database->prepare("DROP TABLE IF EXISTS " . $tableName);
-            if (!$sth->execute()) {
+            $sth = $this->dbConnexion->prepare("DROP TABLE IF EXISTS " . $tableName);
+            if ($sth->execute() === false) {
                 throw new Exception(
                     "Erreur lors de la suppression de la base de donnée",
                     1
                 );
             }
         }
-
-        //Supprimer les fichiers
-        $wikiFiles = new File($fermePath . $this->config['wakka_name']);
-        $wikiFiles->delete();
     }
 
-    /**
-     * Crée une archive de ce wiki.
-     */
-    public function archive()
+    public function archive(): string
     {
+        //TODO refactore
         $wikiName = $this->config['wakka_name'];
         $archiveFilename = $this->fermeConfig['archives_path']
             . $wikiName
@@ -163,8 +142,9 @@ class Wiki implements InterfaceObject
         return $archiveFilename;
     }
 
-    public function upgrade($srcPath)
+    public function upgrade(string $srcPath)
     {
+        // TODO refactore
         // Delete wiki files
         $fileToKeep = array(
             '.', '..', 'wakka.config.php', 'wakka.infos.php', 'files', 'themes', 'custom'
@@ -197,34 +177,17 @@ class Wiki implements InterfaceObject
         $this->setRelease(YESWIKI_VERSION, YESWIKI_RELEASE);
     }
 
-    /**
-     * Retourne la version de YesWiki (cercopitheque, doriphore...)
-     *
-     * @return string
-     */
-    public function getVersion()
+    public function getVersion(): string
     {
         return $this->config['yeswiki_version'];
     }
 
-    /**
-     * Retourne le numéro de release du wiki
-     *
-     * @return string
-     */
-    public function getRelease()
+    public function getRelease(): string
     {
         return $this->config['yeswiki_release'];
     }
 
-     /**
-     * Change user password
-     *
-     * @param string $username
-     * @param string $md5Password
-     * @return void
-     */
-    public function setPassword(string $username, string $md5Password)
+    public function setUserPassword(string $username, string $md5Password)
     {
         $database = $this->dbConnexion;
         $table = $this->name . "_users";
@@ -244,11 +207,10 @@ class Wiki implements InterfaceObject
         }
     }
 
-    public function loadInfos()
+    public function loadInfos(): array
     {
+        // TODO refactor
         unset($this->infos);
-
-        $filePath = $this->path . "wakka.infos.php";
 
         $wakkaInfos = array(
             'mail' => 'nomail',
@@ -256,6 +218,7 @@ class Wiki implements InterfaceObject
             'date' => 0,
         );
 
+        $filePath = $this->path . "wakka.infos.php";
         if (file_exists($filePath)) {
             include $filePath;
         }
@@ -295,13 +258,10 @@ class Wiki implements InterfaceObject
 
     public function addUser(string $username, string $mail, string $md5Password)
     {
-        $database = $this->dbConnexion;
-        $table =  $this->name . "_users";
-
-        $sqlQuery = "INSERT INTO ${table} (name, password, email, signuptime, motto)
-            VALUES (:name, :password, :mail, now(), '');";
-
-        $sth = $database->prepare($sqlQuery);
+        $sth = $this->dbConnexion->prepare(
+            "INSERT INTO {$this->name}_users (name, password, email, signuptime, motto)
+                VALUES (:name, :password, :mail, now(), '');"
+        );
 
         $values = array(
             ':name' => $username,
@@ -323,18 +283,16 @@ class Wiki implements InterfaceObject
         if (in_array($username, $groupMembers)) {
             return;
         }
-
-        $database = $this->dbConnexion;
-        $table =  $this->name . "_triples";
-        $resource = "ThisWikiGroup:${groupname}";
-
-        $sqlQuery = "UPDATE ${table} SET value=:groupMembers WHERE resource=:resource LIMIT 1;";
-        $sth = $database->prepare($sqlQuery);
-
         $groupMembers[] = $username;
 
+        $sth = $this->dbConnexion->prepare(
+            "UPDATE {$this->name}_triples 
+                SET value=:groupMembers 
+                WHERE resource=:resource LIMIT 1;"
+        );
+
         $values = array(
-            ':resource' => $resource,
+            ':resource' => "ThisWikiGroup:${groupname}",
             ':groupMembers' => implode(PHP_EOL, $groupMembers),
         );
 
@@ -348,12 +306,12 @@ class Wiki implements InterfaceObject
 
     public function setUserEmail(string $username, string $email)
     {
-        $database = $this->dbConnexion;
-        $table =  $this->name . "_users";
-
-        $sqlQuery = "UPDATE ${table} SET `email`=:mail WHERE `name`=:name LIMIT 1;";
-
-        $sth = $database->prepare($sqlQuery);
+        $sth = $this->dbConnexion->prepare(
+            "UPDATE {$this->name}_users 
+                SET `email`=:mail 
+                WHERE `name`=:name 
+                LIMIT 1;"
+        );
 
         $values = array(
             ':mail' => $email,
@@ -373,7 +331,7 @@ class Wiki implements InterfaceObject
         return isset($this->config['db_charset']) and $this->config['db_charset'] === "utf8mb4";
     }
 
-    private function getDBTablesList()
+    private function getDBTablesList(): array
     {
         $database = $this->dbConnexion;
         // Echape le caractère '_' et '%'

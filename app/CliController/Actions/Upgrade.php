@@ -2,6 +2,8 @@
 
 namespace Ferme\CliController\Actions;
 
+use Exception;
+
 class Upgrade extends Action
 {
     public const DESCRIPTION = "Upgrade wiki to current package.";
@@ -34,7 +36,7 @@ class Upgrade extends Action
         printf("backup $wikiName : ");
         try {
             $this->ferme->wikis[$wikiName]->archive();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             printf("Error : $e->getMessage()\n");
             return;
         }
@@ -43,7 +45,7 @@ class Upgrade extends Action
         print("Upgrade $wikiName : ");
         try {
             $this->ferme->wikis[$wikiName]->upgrade($this->ferme->getWikiUpgradeSourcePath());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $error = $e->getMessage();
             printf("Error : $error\n");
             return;

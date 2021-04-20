@@ -2,17 +2,15 @@
 
 namespace Ferme\HtmlController\Actions;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
+use Ferme\Ferme;
+
 abstract class Action
 {
-    protected $get;
-    protected $post;
-    protected $ferme;
+    protected array $get;
+    protected array $post;
+    protected Ferme $ferme;
 
-    public function __construct($ferme, $get, $post)
+    public function __construct(Ferme $ferme, array $get, array $post)
     {
         $this->ferme = $ferme;
         $this->get = $get;

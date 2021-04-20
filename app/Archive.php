@@ -3,68 +3,37 @@
 namespace Ferme;
 
 use Exception;
+use Ferme\Configuration;
 
 class Archive implements InterfaceObject
 {
-    /**
-     * @var mixed
-     */
-    public $filename;
-    /**
-     * @var mixed
-     */
-    private $config;
+    public string $filename;
+    private Configuration $config;
 
-    /**
-     * Constructeur
-     *
-     * @param string $filename chemin vers le fichier d'archive
-     * @param Configuration $config Classe gérant le configuration
-     */
-    public function __construct($filename, $config)
+    public function __construct(string $filename, Configuration $config)
     {
         $this->filename = $filename;
         $this->config = $config;
     }
 
-    /**
-     * retournes les infos sur l'archive
-     *
-     * @return array
-     */
-    public function getInfos()
+    public function getInfos(): array
     {
-        $tabInfos = array();
-        $tabInfos['name'] = substr($this->filename, 0, -16);
-        $tabInfos['filename'] = $this->filename;
-        $strDate = substr($this->filename, -16, 12);
-        $tabInfos['date'] = mktime(
-            intval(substr($strDate, 8, 2)),
-            intval(substr($strDate, 10, 2)),
-            0,
-            intval(substr($strDate, 4, 2)),
-            intval(substr($strDate, 6, 2)),
-            intval(substr($strDate, 0, 4))
+        return array(
+            'name' => substr($this->filename, 0, -16),
+            'filename' => $this->filename,
+            'date' => $this->readCreationDateFromFilename(),
+            'url' => $this->getArchiveURL(),
+            'size' => $this->getArchiveWeight(),
         );
-        $tabInfos['url'] = $this->getURL();
-        $tabInfos['size'] = $this->calFilesSize();
-        return $tabInfos;
     }
 
-    /**
-     * Génère l'URL de téléchargement d'une archive
-     * @return string URL pour télécharger le fichier.
-     */
-    public function getURL()
+    public function getArchiveURL(): string
     {
         $name = substr($this->filename, 0, -4);
         $url = '?download=' . $name;
         return $url;
     }
 
-    /*************************************************************************
-     * Supprime une archive
-     ************************************************************************/
     public function delete()
     {
         if (unlink($this->config['archives_path'] . $this->filename) === false) {
@@ -72,14 +41,21 @@ class Archive implements InterfaceObject
         }
     }
 
-    /*************************************************************************
-     * calcul le poid d'un fichier
-     ************************************************************************/
-    private function calFilesSize()
+    private function readCreationDateFromFilename(): int
     {
-        return filesize(
-            $this->config['archives_path']
-            . $this->filename
+        $strDate = substr($this->filename, -16, 12);
+        return mktime(
+            (int) substr($strDate, 8, 2),
+            (int) substr($strDate, 10, 2),
+            0,
+            (int) substr($strDate, 4, 2),
+            (int) substr($strDate, 6, 2),
+            (int) substr($strDate, 0, 4),
         );
+    }
+
+    private function getArchiveWeight()
+    {
+        return filesize($this->config['archives_path'] . $this->filename);
     }
 }

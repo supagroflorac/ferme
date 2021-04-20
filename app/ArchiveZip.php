@@ -6,13 +6,14 @@ use Ferme\Archive;
 use Ferme\Database;
 use ZipArchive;
 use Exception;
+use PDO;
 
 class ArchiveZip extends Archive
 {
-    public function restore($fermeFolder, $archivesFolder, $dbConnexion)
+    public function restore(string $fermeFolder, string $archivesFolder, PDO $dbConnexion): string
     {
         $name = $this->getInfos()['name'];
-        $sqlFile = $fermeFolder . '/' . $name . '.sql';
+        $sqlFile = "{$fermeFolder}/{$name}.sql";
         $archivePath = $archivesFolder . $this->filename;
 
         $archive = new ZipArchive();

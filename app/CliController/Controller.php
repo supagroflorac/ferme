@@ -4,15 +4,6 @@ namespace Ferme\CliController;
 
 use Ferme\Ferme;
 
-/**
- * Classe Controller
- *
- * gère les entrées ($post et $get)
- * @package Ferme
- * @author  Florestan Bredow <florestan.bredow@supagro.fr>
- * @version 0.0.1 (Git: $Id$)
- * @copyright 2015 Florestan Bredow
- */
 class Controller
 {
     private $ferme;

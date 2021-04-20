@@ -1,25 +1,19 @@
 <?php
+
 namespace Ferme;
 
-/**
- * Classe DatabaseExport
- *
- * Exporte une base de donnée SQL vers un fichier
- * @package Ferme
- * @author  Florestan Bredow <florestan.bredow@supagro.fr>
- * @version 0.1.1 (Git: $Id$)
- * @copyright 2015 Florestan Bredow
- */
+use PDO;
+
 class Database
 {
-    private $dbConnexion = null;
+    private PDO $dbConnexion;
 
-    public function __construct($dbConnexion)
+    public function __construct(PDO $dbConnexion)
     {
         $this->dbConnexion = $dbConnexion;
     }
 
-    public function export($file, $prefix = null)
+    public function export(string $file, string $prefix = "")
     {
         $tableList = $this->getTableList($prefix);
 
@@ -36,50 +30,51 @@ class Database
         file_put_contents($file, $output);
     }
 
-    public function import($sqlFile)
+    public function import(string $sqlFile)
     {
         $content = file_get_contents($sqlFile);
         $sth = $this->dbConnexion->prepare($content);
         $sth->execute();
     }
 
-    private function getCreateTable($tableName)
+    private function getCreateTable(string $tableName): string
     {
-        $query = "SHOW CREATE TABLE $tableName;";
+        $query = "SHOW CREATE TABLE {$tableName};";
         $sth = $this->dbConnexion->prepare($query);
         $sth->execute();
         return $sth->fetchAll()[0]['Create Table'];
     }
 
-    private function getTableContent($tableName)
+    private function getTableContent(string $tableName): string
     {
-        $query = "SELECT * FROM $tableName;";
+        $query = "SELECT * FROM {$tableName};";
         $sth = $this->dbConnexion->prepare($query);
         $sth->execute();
-        $queryResult = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        $queryResult = $sth->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($queryResult)) {
             return "";
         }
 
-        $output = "LOCK TABLES `$tableName` WRITE;\n";
-        $output .= "INSERT INTO `$tableName` VALUES ";
-
+        $output = "LOCK TABLES `{$tableName}` WRITE;\n"
+            . "INSERT INTO `{$tableName}` VALUES ";
+        // TODO Une commande par page plutot que tout dans la même : permettrai d'extraire plus facilement certaines données.
         $lineOutput = "";
         foreach ($queryResult as $line) {
             $columnOutput = "";
             foreach ($line as $columnValue) {
-                $columnOutput .= "'" . $this->prepareData($columnValue) . "',";
+                $columnOutput .= "'{$this->prepareData($columnValue)}',";
             }
-            $lineOutput .= "(" . $this->removeLastComma($columnOutput) . "),";
+            $lineOutput .= "({$this->removeLastComma($columnOutput)}),";
         }
-        $output .= $this->removeLastComma($lineOutput) . ";\n";
-        $output .= "UNLOCK TABLES;\n\n";
+        $output .= "{$this->removeLastComma($lineOutput)};\n"
+            . "UNLOCK TABLES;\n\n";
+
         return $output;
     }
 
 
-    private function getTableList($prefix)
+    private function getTableList(string $prefix): array
     {
         // Echappe les caractère % et _
         $prefix = str_replace(array('%', '_'), array('\%', '\_'), $prefix);
@@ -98,14 +93,14 @@ class Database
         return $tableList;
     }
 
-    private function prepareData($data)
+    private function prepareData(string $data): string
     {
         $output = addslashes($data);
         $output = str_replace("\n", "\\n", $output);
         return $output;
     }
 
-    private function removeLastComma($string)
+    private function removeLastComma(string $string): string
     {
         if (substr($string, -1) === ',') {
             return substr($string, 0, -1);

@@ -12,6 +12,7 @@ class AddWiki extends Action
 {
     public function execute()
     {
+        // TODO Refactore this ugly function.
         if (!$this->isHashcashValid()) {
             $this->ferme->alerts->add(
                 'La plantation de wiki est une activité délicate qui'
@@ -49,15 +50,15 @@ class AddWiki extends Action
                 $this->ferme->config,
                 $this->ferme->dbConnexion
             );
-            $wikiName = $this->cleanEntry($this->post['wikiName']);
+            $wikiName = $this->cleanString($this->post['wikiName']);
             $wiki = $wikiFactory->createNewWiki(
                 $wikiName,
-                $this->cleanEntry($this->post['mail']),
-                $this->cleanEntry($this->post['description'])
+                $this->cleanString($this->post['mail']),
+                $this->cleanString($this->post['description'])
             );
             $this->ferme->wikis->add($wikiName, $wiki);
             $wikiAdminPassword = Password::random(12);
-            $wiki->setPassword("WikiAdmin", md5($wikiAdminPassword));
+            $wiki->setUserPassword("WikiAdmin", md5($wikiAdminPassword));
             $wiki->addAdminUser(
                 "FermeAdmin",
                 $this->ferme->config['mail_from'],
@@ -78,7 +79,7 @@ class AddWiki extends Action
         $mail->send();
     }
 
-    private function isHashcashValid()
+    private function isHashcashValid(): bool
     {
         require_once 'app/secret/wp-hashcash.php';
         if (
@@ -90,12 +91,7 @@ class AddWiki extends Action
         return true;
     }
 
-    /**
-     * Définis si le nom d'un wiki est valide
-     * @param  strin   $name Nom potentiel du wiki.
-     * @return boolean       Vrai si le nom est valide, faux sinon
-     */
-    private function isValidWikiName($name)
+    private function isValidWikiName(string $name): bool
     {
         if (preg_match("~^[a-z0-9]{1,20}$~i", $name)) {
             return false;
@@ -103,12 +99,7 @@ class AddWiki extends Action
         return true;
     }
 
-    /**
-     * Nettoie une chaine de caractère
-     * @param  string $entry Chaine a nettoyer
-     * @return string        Chaine de caractères nettoyées
-     */
-    private function cleanEntry($entry)
+    private function cleanString(string $entry): string
     {
         return htmlentities($entry, ENT_QUOTES, "UTF-8");
     }

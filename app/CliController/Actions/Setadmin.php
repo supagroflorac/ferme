@@ -2,10 +2,8 @@
 
 namespace Ferme\CliController\Actions;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
+use Exception;
+
 class Setadmin extends Action
 {
     public const DESCRIPTION = "Adds the user FermeAdmin (replace existing)";
@@ -62,8 +60,8 @@ class Setadmin extends Action
                 print("OK\n");
                 return;
             }
-            $wiki->setPassword($userName, $md5Password);
-        } catch (\Exception $e) {
+            $wiki->setUserPassword($userName, $md5Password);
+        } catch (Exception $e) {
             $error = $e->getMessage();
             printf("Error : $error\n");
             return;

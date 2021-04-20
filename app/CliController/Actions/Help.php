@@ -2,10 +2,6 @@
 
 namespace Ferme\CliController\Actions;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
 class Help extends Action
 {
     public const DESCRIPTION = "This help";

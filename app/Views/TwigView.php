@@ -2,32 +2,16 @@
 
 namespace Ferme\Views;
 
-use Twig_Environment;
 use Ferme\Ferme;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
 abstract class TwigView extends View
 {
-    /**
-     * @var Environment
-     */
-    protected Environment $twig;
 
-    /**
-     * Get all informations needed by the view
-     * @return array needed informations for the view
-     */
+    protected Environment $twig;
     abstract protected function compileInfos(): array;
 
-    /**
-     * Constructor
-     * @param Ferme $ferme reference to model.
-     */
     public function __construct(Ferme $ferme)
     {
         parent::__construct($ferme);
@@ -35,10 +19,6 @@ abstract class TwigView extends View
         $this->twig = new Environment($loader);
     }
 
-    /**
-     * Show the view
-     * @return void
-     */
     public function show()
     {
         $listInfos = $this->compileInfos();
@@ -47,23 +27,16 @@ abstract class TwigView extends View
         echo $this->twig->render($this->getTemplateFilename(), $listInfos);
     }
 
-    /**
-     * @return string
-     */
-    private function getTemplateFilename()
+    private function getTemplateFilename(): string
     {
         $explodedClassName = explode('\\', get_class($this));
         $className = end($explodedClassName);
         return "$className.twig";
     }
 
-    /**
-     * Ajoute les informations sur le thème courant (js, css...)
-     * @param [type] &$infos le tableau d'information a completer.
-     */
-    private function addThemesInfos(&$infos)
+    private function addThemesInfos(array $infos): array
     {
-        $infos = array_merge(
+        return array_merge(
             $infos,
             array(
                 'list_css' => $this->getCSS(),
@@ -71,16 +44,11 @@ abstract class TwigView extends View
                 'list_js' => $this->getJS(),
             )
         );
-        return $infos;
     }
 
-    /**
-     * list CSS files present in "css" theme's folder
-     * @return array
-     */
-    private function getCSS()
+    private function getCSS(): array
     {
-        $cssPath =  $this->getThemePath() . "/css/";
+        $cssPath =  "{$this->getThemePath()}/css/";
         $listCss = array();
         foreach ($this->getFiles($cssPath) as $file) {
             $listCss[] = $file;
@@ -88,13 +56,9 @@ abstract class TwigView extends View
         return $listCss;
     }
 
-    /**
-     * list JS files present in "js" theme's folder
-     * @return array
-     */
-    private function getJS()
+    private function getJS(): array
     {
-        $jsPath = $this->getThemePath() . "/js/";
+        $jsPath = "{$this->getThemePath()}/js/";
         $listJs = array();
         foreach ($this->getFiles($jsPath) as $file) {
             $listJs[] = $file;
@@ -102,14 +66,7 @@ abstract class TwigView extends View
         return $listJs;
     }
 
-    /**
-     * List files in directory
-     * @todo Filter results by extension (css ou js)
-     * @todo use Iterators
-     * @param $path Path to folder to scan
-     * @return array
-     */
-    private function getFiles($path)
+    private function getFiles(string $path): array
     {
         $fileArray = array();
         $handle = opendir($path);
@@ -129,29 +86,18 @@ abstract class TwigView extends View
         return $fileArray;
     }
 
-    /**
-     * Add connected user's informations
-     * @param  array  $infos Array to complete
-     * @return array
-     */
-    private function addUserInfos(&$infos): array
+    private function addUserInfos(array $infos): array
     {
-        $infos = array_merge(
+        return array_merge(
             $infos,
             array(
                 'username' => $this->ferme->users->whoIsLogged(),
                 'logged' => $this->ferme->users->isLogged(),
             )
         );
-        return $infos;
     }
 
-    /**
-    * transform a list of Archives / Wikis in array of informations
-    * @param  array $listObjects object list
-    * @return array objects informations
-    */
-    protected function object2Infos($listObjects)
+    protected function object2Infos(array $listObjects): array
     {
         $listInfos = array();
         foreach ($listObjects as $name => $object) {
@@ -160,11 +106,7 @@ abstract class TwigView extends View
         return $listInfos;
     }
 
-    /**
-     * [getThemePath description]
-     * @return [type] [description]
-     */
-    private function getThemePath()
+    private function getThemePath(): string
     {
         return 'themes/' . $this->ferme->config['template'];
     }

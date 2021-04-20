@@ -6,8 +6,8 @@ use Exception;
 
 class Download
 {
-    private $name;
-    private $path;
+    private string $name;
+    private string $path;
 
     public function __construct($name, $ferme)
     {

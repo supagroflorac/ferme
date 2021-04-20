@@ -21,7 +21,7 @@ if (!is_dir(__DIR__ . '/../vendor')) {
 include_once __DIR__ . '/../vendor/autoload.php';
 
 if (!is_file(__DIR__ . '/../ferme.config.php')) {
-    throw new \Exception(
+    throw new Exception(
         'Le fichier de configuration est absent.',
         1
     );

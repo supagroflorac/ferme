@@ -2,16 +2,8 @@
 
 namespace Ferme\Views;
 
-/**
- * @author Florestan Bredow <florestan.bredow@supagro.fr>
- * @link http://www.phpdoc.org/docs/latest/index.html
- */
 class Administration extends TwigView
 {
-    /**
-     * Get all informations needed by the view
-     * @return array needed informations for the view
-     */
     protected function compileInfos(): array
     {
         $infos = array();
@@ -21,7 +13,7 @@ class Administration extends TwigView
         $listWiki = $this->ferme->wikis->search();
         foreach ($listWiki as $wiki) {
             $wiki->infos['LasPageModificationDateTime'] = $wiki->getLasPageModificationDateTime();
-            $wiki->infos['FilesDiskUsage'] = $wiki->getFilesDiskUsage();
+            $wiki->infos['FilesDiskUsage'] = $wiki->getDiskUsage();
             $wiki->infos['Release'] = $wiki->getRelease();
             $wiki->infos['Version'] = $wiki->getVersion();
         }

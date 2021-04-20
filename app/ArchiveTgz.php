@@ -5,10 +5,11 @@ namespace Ferme;
 use Ferme\Archive;
 use Ferme\Database;
 use PharData;
+use PDO;
 
 class ArchiveTgz extends Archive
 {
-    public function restore($fermeFolder, $archivesFolder, $dbConnexion)
+    public function restore(string $fermeFolder, string $archivesFolder, PDO $dbConnexion): string
     {
         $name = $this->getInfos()['name'];
         $sqlFile = $fermeFolder . '/' . $name . '.sql';

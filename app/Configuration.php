@@ -6,16 +6,10 @@ use ArrayAccess;
 
 class Configuration implements ArrayAccess
 {
-    private $config;
+    private array $config = array();
 
-    /**
-     * [__construct description]
-     * @param [type] $file [description]
-     */
     public function __construct($file)
     {
-        $this->config = array();
-
         if (is_file($file)) {
             include $file;
         }
@@ -55,16 +49,12 @@ class Configuration implements ArrayAccess
         return isset($this->config[$offset]) ? $this->config[$offset] : null;
     }
 
-    /**
-     * écris le fichier de configuration
-     * @return [type] [description]
-     */
-    public function write($file, $arrayName = "wakkaConfig")
+    public function write(string $file, string $arrayName = "wakkaConfig")
     {
         $content = "<?php\n\n";
-        $content .= "\$$arrayName = array(\n";
+        $content .= "\${$arrayName} = array(\n";
         foreach ($this->config as $key => $value) {
-            $content .= "    \"" . $key . "\" => \"" . $value . "\",\n";
+            $content .= "  \"{$key}\" => \"{$value}\",\n";
         }
         $content .= ");\n";
         file_put_contents($file, $content);

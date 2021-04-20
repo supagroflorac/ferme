@@ -7,16 +7,8 @@ use Ferme\CSV;
 
 class CsvMailing extends View
 {
-    /**
-     * Default name for CVS exported file
-     * @var string
-     */
     public const FILENAME = "mailing.csv";
 
-    /**
-     * Show the view
-     * @return void
-     */
     public function show()
     {
         $csv = new CSV();

@@ -18,11 +18,6 @@ class WikiFactory
         $this->dbConnexion = $dbConnexion;
     }
 
-    /**
-     * Charge un wiki déjà installé
-     * @param  string $name nom du wiki a charger.
-     * @return  Wiki        Le wiki chargé.
-     */
     public function loadWikiFromExisting(string $name): Wiki
     {
         $wikiPath = $this->getWikiPath($name);
@@ -32,13 +27,6 @@ class WikiFactory
         return $wiki;
     }
 
-    /**
-     * Install un nouveau wiki
-     * @param  string $name        Nom du wiki
-     * @param  string $mail        Mail de la personne qui installe le wiki
-     * @param  string $description Description du Wiki
-     * @return Wiki                Le wiki fraîchement installé
-     */
     public function createNewWiki(string $name, string $mail, string $description): Wiki
     {
         $wikiPath = $this->getWikiPath($name);
@@ -63,7 +51,7 @@ class WikiFactory
         return $this->loadWikiFromExisting($wikiName);
     }
 
-    private function getWikiPath($name)
+    private function getWikiPath($name): string
     {
         return $this->fermeConfig['ferme_path'] . $name . "/";
     }

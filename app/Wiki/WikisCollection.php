@@ -3,6 +3,7 @@
 namespace Ferme\Wiki;
 
 use Ferme\Collection;
+use Ferme\Configuration;
 use Ferme\Wiki\WikiFactory;
 use RecursiveDirectoryIterator;
 
@@ -15,7 +16,7 @@ class WikisCollection extends Collection
      * Initialise la classe (appelé par le constructeur)
      * @param  array  args['config'] Instance de Configuration (Obligatoire)
      */
-    public function __construct($config, $dbConnexion)
+    public function __construct(Configuration $config, $dbConnexion)
     {
         parent::__construct();
         $this->config = $config;

@@ -13,22 +13,20 @@ class MailResetWikiAdminPassword extends Mail
         $this->wikiAdminPassword = $wikiAdminPassword;
     }
 
-    protected function getData()
+    protected function getData(): array
     {
-        $data = array(
+        return array(
             'name' => $this->wiki->name,
             'url' => $this->wiki->getInfos()['url'],
             'to' => $this->wiki->getInfos()['mail'],
             'from' => $this->config['mail_from'],
-            'subject' => 'Mot de passe du wiki ' . $this->wiki->name,
+            'subject' => "Mot de passe du wiki {$this->wiki->name}",
             'wikiAdminPassword' => $this->wikiAdminPassword,
             'listContacts' => $this->config['contacts']
         );
-
-        return $data;
     }
 
-    protected function getTemplate()
+    protected function getTemplate(): string
     {
         return "resetWikiAdminPassword.twig";
     }

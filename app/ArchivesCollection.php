@@ -6,10 +6,11 @@ use Ferme\Collection;
 use Exception;
 use Ferme\ArchiveFactory;
 use RecursiveDirectoryIterator;
+use Ferme\Configuration;
 
 class ArchivesCollection extends Collection
 {
-    private $config;
+    private Configuration $config;
 
     public function __construct($config)
     {
