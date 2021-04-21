@@ -1,24 +1,28 @@
---- packages/cercopitheque/includes/YesWikiInit.php.old	2021-02-16 11:17:50.002000000 +0100
-+++ packages/cercopitheque/includes/YesWikiInit.php	2021-02-16 11:19:09.108418435 +0100
-@@ -267,14 +267,18 @@
+--- packages/cercopitheque/includes/YesWikiInit.php	2021-04-20 19:19:10.000000000 +0200
++++ packages/cercopitheque-patched/includes/YesWikiInit.php	2021-04-21 10:57:40.880028330 +0200
+@@ -266,8 +266,7 @@
+     {
          // configuration du cookie de session
          // determine le chemin pour les cookies
-         $a = parse_url($this->config['base_url']);
+-        $a = parse_url($this->config['base_url']);
 -        $CookiePath = dirname($a['path']);
-+        $CookiePath = $a['path'];
++        $CookiePath = parse_url($this->config['base_url']);
  
          // Fixe la gestion des cookie sous les OS utilisant le \ comme separteur de chemin
          $CookiePath = str_replace('\\', '/', $CookiePath);
- 
-         // ajoute un '/' terminal sauf si on est a la racine web
--        if ($CookiePath != '/') {
--            $CookiePath .= '/';
-+        // ajoute un '/' si on est a la racine web
-+        if (
-+            empty($CookiePath)
-+            or !empty($this->config['global_cookie_path'])
-+        ) {
-+            $CookiePath = '/';
+@@ -278,10 +277,11 @@
          }
  
          // test if session exists, because the wiki object is instanciated for every plugin
+-        if (!isset($_SESSION)) {
+-            $a = session_get_cookie_params();
+-            session_set_cookie_params($a['lifetime'], $CookiePath);
+-            unset($a);
++        if (isset($_SESSION) === false) {
++            $cookiesParam = session_get_cookie_params();
++            $cookiesParam['path'] = $CookiePath;
++            session_set_cookie_params($cookiesParam);
++            session_name($this->config["wakka_name"]);
+             session_start();
+         }
+ 
