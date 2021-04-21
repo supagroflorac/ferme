@@ -7,57 +7,18 @@ use Ferme\Wiki\WikiFactory;
 use Ferme\Password;
 use Ferme\Mails\MailCreateWiki;
 use Exception;
+use Ferme\Wiki\Wiki;
 
 class AddWiki extends Action
 {
     public function execute()
     {
-        // TODO Refactore this ugly function.
-        if (!$this->isHashcashValid()) {
-            $this->ferme->alerts->add(
-                'La plantation de wiki est une activité délicate qui'
-                . ' ne doit pas être effectuée par un robot. (Pensez à'
-                . ' activer JavaScript)',
-                'error'
-            );
-            return;
-        }
-
-        if (
-            !isset($this->post['wikiName'])
-            or !isset($this->post['mail'])
-            or !isset($this->post['description'])
-        ) {
-            $this->ferme->alerts->add("Formulaire incomplet.", 'error');
-            return;
-        }
-
-        if ($this->isValidWikiName($this->post['wikiName'])) {
-            $this->ferme->alerts->add("Ce nom n'est pas valide : "
-                . "longueur entre 1 et 20 caractères, uniquement les lettres de 'A' à 'Z' "
-                . "(minuscules ou majuscules), chiffres de 0 à 9 "
-                . "(pas d'espaces ou de tirets)", 1);
-            return;
-        }
-
-        if (!filter_var($this->post['mail'], FILTER_VALIDATE_EMAIL)) {
-            $this->ferme->alerts->add("Cet email n'est pas valide.", 1);
-            return;
-        }
+        $wikiName = $this->cleanString($this->post['wikiName']);
+        $wikiAdminPassword = Password::random(12);
 
         try {
-            $wikiFactory = new WikiFactory(
-                $this->ferme->config,
-                $this->ferme->dbConnexion
-            );
-            $wikiName = $this->cleanString($this->post['wikiName']);
-            $wiki = $wikiFactory->createNewWiki(
-                $wikiName,
-                $this->cleanString($this->post['mail']),
-                $this->cleanString($this->post['description'])
-            );
-            $this->ferme->wikis->add($wikiName, $wiki);
-            $wikiAdminPassword = Password::random(12);
+            $this->checkEntries();
+            $wiki = $this->addNewWiki($wikiName);
             $wiki->setUserPassword("WikiAdmin", md5($wikiAdminPassword));
             $wiki->addAdminUser(
                 "FermeAdmin",
@@ -69,14 +30,65 @@ class AddWiki extends Action
             return;
         }
 
-        $wikiUrl = $this->ferme->config['base_url'] . $wiki->path;
-        $this->ferme->alerts->add(
-            "<a href='${wikiUrl}'>Visiter le nouveau wiki</a>. Vous recevrez un mail avec le mot de passe WikiAdmin.",
-            'success'
-        );
-
         $mail = new MailCreateWiki($this->ferme->config, $wiki, $wikiAdminPassword);
         $mail->send();
+
+        $wikiUrl = $this->ferme->config['base_url'] . $wiki->path;
+        $this->ferme->alerts->add(
+            "<a href='{$wikiUrl}'>Visiter le nouveau wiki</a>. Vous recevrez un mail avec le mot de passe WikiAdmin.",
+            'success'
+        );
+    }
+
+    private function addNewWiki($wikiName): Wiki
+    {
+        $wikiFactory = new WikiFactory(
+            $this->ferme->config,
+            $this->ferme->dbConnexion
+        );
+
+        $wiki = $wikiFactory->createNewWiki(
+            $wikiName,
+            $this->cleanString($this->post['mail']),
+            $this->cleanString($this->post['description'])
+        );
+
+        $this->ferme->wikis->add($wikiName, $wiki);
+
+        return $wiki;
+    }
+
+    private function checkEntries()
+    {
+        if (!$this->isHashcashValid()) {
+            throw new Exception(
+                "La plantation de wiki est une activité délicate qui'
+                . ' ne doit pas être effectuée par un robot. (Pensez à'
+                . ' activer JavaScript)",
+                1
+            );
+        }
+
+        if (
+            !isset($this->post['wikiName'])
+            or !isset($this->post['mail'])
+            or !isset($this->post['description'])
+        ) {
+            throw new Exception("Formulaire incomplet.", 'error');
+        }
+
+        if ($this->isValidWikiName($this->post['wikiName'])) {
+            throw new Exception(
+                "Ce nom n'est pas valide : longueur entre 1 et 20 caractères, uniquement"
+                . " les lettres de 'A' à 'Z' (minuscules ou majuscules), chiffres de 0 à 9 "
+                . "(pas d'espaces ou de tirets)", 
+                1
+            );
+        }
+
+        if (!filter_var($this->post['mail'], FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Cet email n'est pas valide.", 1);
+        }
     }
 
     private function isHashcashValid(): bool
