@@ -57,27 +57,20 @@ class Ferme
 
     public function checkInstallation()
     {
-        // TODO refactor (2 private functions)
-        if (!is_dir($this->config['ferme_path'])) {
-            if (!mkdir($this->config['ferme_path'], 0777, true)) {
-                throw new Exception(
-                    "Le dossier d'installation des wiki ("
-                        . $this->config['ferme_path']
-                        . ") ne peut être créé.",
-                    1
-                );
-            }
-        }
+        $this->createFolderIfNotExist($this->config['ferme_path']);
+        $this->createFolderIfNotExist($this->config['archives_path']);
+    }
 
-        if (!is_dir($this->config['archives_path'])) {
-            if (!mkdir($this->config['archives_path'], 0777, true)) {
-                throw new Exception(
-                    "Le dossier des archives ("
-                    . $this->config['archives_path']
-                    . ") ne peut être créé.",
-                    1
-                );
-            }
+    private function createFolderIfNotExist(string $path)
+    {
+        if (
+            is_dir($path) === false
+            and mkdir($path, 0777, true) === false
+        ) {
+            throw new Exception(
+                "Le dossier {$path} n'existe pas et ne peut être créé.",
+                1
+            );
         }
     }
 
