@@ -22,17 +22,9 @@ class ArchiveFactory
         return $this->createFromExisting(basename($archivePath));
     }
 
-    public function createFromExisting(string $filename): Archive
+    public function createFromExisting(string $filename): ArchiveZip
     {
-        // TODO Viole la regle du ouvert/Fermé. A revoir.
-        $fileExtension = substr($filename, -3);
-        if ($fileExtension === "tgz") {
-            $archive = new ArchiveTgz($filename, $this->config);
-        }
-
-        if ($fileExtension === "zip") {
-            $archive = new ArchiveZip($filename, $this->config);
-        }
+        $archive = new ArchiveZip($filename, $this->config);
 
         if (!isset($archive)) {
             throw new Exception("Type d'archive none reconnu : $filename", 1);
