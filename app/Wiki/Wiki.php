@@ -144,37 +144,52 @@ class Wiki implements InterfaceObject
 
     public function upgrade(string $srcPath)
     {
-        // TODO refactore
-        // Delete wiki files
-        $fileToKeep = array(
-            '.', '..', 'wakka.config.php', 'wakka.infos.php', 'files', 'themes', 'custom'
-        );
+        $filesToKeep = array('wakka.config.php', 'wakka.infos.php', 'files', 'themes', 'custom');
+
+        $this->deleteFilesInfolderAndKeepSelected($filesToKeep);
+        $this->copyFilesFromSource($srcPath, $filesToKeep);
+        $this->setReleaseFromPackage($srcPath);
+        $this->config->write($this->path . "/wakka.config.php");
+    }
+
+    private function deleteFilesInFolderAndKeepSelected(array $filesToKeep = array())
+    {
+        $filesToKeep = array_merge($filesToKeep, array('..', '.'));
+
         $res = opendir($this->path);
         if ($res !== false) {
             while ($filename = readdir($res)) {
-                if (!in_array($filename, $fileToKeep)) {
+                if (!in_array($filename, $filesToKeep)) {
                     $file = new File($this->path . '/' . $filename);
                     $file->delete();
                 }
             }
             closedir($res);
         }
+    }
 
-        // Copies new files
+    private function copyFilesFromSource(string $srcPath, array $filesToIgnore = array())
+    {
+        $filesToIgnore = array_merge($filesToIgnore, array('..', '.'));
+
         $res = opendir($srcPath);
         if ($res !== false) {
             while ($filename = readdir($res)) {
-                if (!in_array($filename, $fileToKeep)) {
+                if (!in_array($filename, $filesToIgnore)) {
                     $file = new File($srcPath . $filename);
                     $file->copy($this->path . '/' . $filename);
                 }
             }
             closedir($res);
         }
+    }
 
-        // Updates the version and release number.
+    private function setReleaseFromPackage(string $srcPath)
+    {
+        $this->loadConfiguration();
         include_once "${srcPath}/includes/constants.php";
-        $this->setRelease(YESWIKI_VERSION, YESWIKI_RELEASE);
+        $this->config['yeswiki_version'] = YESWIKI_VERSION;
+        $this->config['yeswiki_release'] = YESWIKI_RELEASE;
     }
 
     public function getVersion(): string
@@ -378,13 +393,5 @@ class Wiki implements InterfaceObject
         }
         $result = explode(PHP_EOL, $sth->fetch(\PDO::FETCH_ASSOC)['value']);
         return $result;
-    }
-
-    private function setRelease(string $version, string $release)
-    {
-        $this->loadConfiguration();
-        $this->config['yeswiki_version'] = $version;
-        $this->config['yeswiki_release'] = $release;
-        $this->config->write($this->path . "/wakka.config.php");
     }
 }
