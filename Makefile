@@ -5,7 +5,7 @@ SHELL := bash
 
 PACKAGE_DIR := packages
 YESWIKI_VERSION := cercopitheque
-YESWIKI_RELEASE := 2021-02-18-2
+YESWIKI_RELEASE := 2021-05-10-1
 YESWIKI_ZIPFILE := https://repository.yeswiki.net/${YESWIKI_VERSION}/yeswiki-${YESWIKI_VERSION}-${YESWIKI_RELEASE}.zip
 TMP_FILE := /tmp/yeswiki-${YESWIKI_VERSION}-${YESWIKI_RELEASE}.zip
 PACKAGE_FILES_TO_REMOVE := $(shell cat .package_cleaning)
@@ -24,7 +24,7 @@ update: clean gitpull init
 
 build-package:
 	@printf "Downloading yeswiki-${YESWIKI_VERSION}-${YESWIKI_RELEASE}.zip...\n"
-	@wget -q -O ${TMP_FILE} $(YESWIKI_ZIPFILE)
+	@wget -O ${TMP_FILE} $(YESWIKI_ZIPFILE)
 	@printf "Extracting package...\n"
 	@unzip -o -q -d ${PACKAGE_DIR}/ ${TMP_FILE}
 	@printf "Cleaning package...\n"
@@ -33,7 +33,6 @@ build-package:
 		rm -rf ${PACKAGE_DIR}/${YESWIKI_VERSION}/$$file; \
 	done
 	@printf "patching YesWiki (Cookies)"
-	patch -i patch/yeswiki_cookie.diff ${PACKAGE_DIR}/${YESWIKI_VERSION}/includes/YesWikiInit.php
 
 clean:
 	@printf "Deleting package...\n"
