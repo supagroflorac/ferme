@@ -19,7 +19,7 @@ class Wiki implements InterfaceObject
     public $name;
     private $fermeConfig;
     public $dbConnexion;
-    public $infos = null;
+    private $infos = null;
     private $config = null;
 
     public function __construct(string $name, string $path, Configuration $fermeConfig, PDO $dbConnexion)
@@ -63,9 +63,37 @@ class Wiki implements InterfaceObject
     public function getInfos(): array
     {
         if (is_null($this->infos)) {
-            return $this->loadInfos();
+            $this->reloadInfos();
         }
         return $this->infos;
+    }
+
+    private function reloadInfos()
+    {
+        $this->infos = $this->loadWakkaInfosFile();
+        $this->infos['name'] = $this->name;
+        $this->infos['url'] = $this->config['base_url'];
+        $this->infos['description'] = html_entity_decode($this->infos['description'], ENT_QUOTES, "UTF-8");
+        $this->infos['LasPageModificationDateTime'] = $this->getLasPageModificationDateTime();
+        $this->infos['FilesDiskUsage'] = $this->getDiskUsage();
+        $this->infos['Release'] = $this->getRelease();
+        $this->infos['Version'] = $this->getVersion();
+    }
+
+    private function loadWakkaInfosFile(): array
+    {
+        $wakkaInfos = array(
+            'mail' => 'nomail',
+            'description' => 'Pas de description.',
+            'date' => 0,
+        );
+
+        $filePath = $this->path . "wakka.infos.php";
+        if (file_exists($filePath)) {
+            include $filePath;
+        }
+        
+        return $wakkaInfos;
     }
 
     public function delete()
@@ -220,33 +248,6 @@ class Wiki implements InterfaceObject
                 1
             );
         }
-    }
-
-    public function loadInfos(): array
-    {
-        // TODO refactor
-        unset($this->infos);
-
-        $wakkaInfos = array(
-            'mail' => 'nomail',
-            'description' => 'Pas de description.',
-            'date' => 0,
-        );
-
-        $filePath = $this->path . "wakka.infos.php";
-        if (file_exists($filePath)) {
-            include $filePath;
-        }
-
-        $this->infos = $wakkaInfos;
-        $this->infos['name'] = $this->name;
-        $this->infos['url'] = $this->config['base_url'];
-        $this->infos['description'] = html_entity_decode(
-            $this->infos['description'],
-            ENT_QUOTES,
-            "UTF-8"
-        );
-        return $this->infos;
     }
 
     public function isUserExist(string $username): bool

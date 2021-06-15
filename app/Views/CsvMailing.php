@@ -21,13 +21,13 @@ class CsvMailing extends View
         $csv->insert(array('Nom wiki', 'Email', 'Date création', 'URL'));
 
         foreach ($this->ferme->wikis as $wiki) {
-            $infos = $wiki->getInfos();
+            $wikiInfos = $wiki->getInfos();
             $csv->insert(
                 array(
-                    $infos['name'],
-                    $infos['mail'],
-                    date("Y-m-d", $infos['date']),
-                    str_replace('wakka.php?wiki=', '', $infos['url']),
+                    $wikiInfos['name'],
+                    $wikiInfos['mail'],
+                    date("Y-m-d", $wikiInfos['date']),
+                    str_replace('wakka.php?wiki=', '', $wikiInfos['url']),
                 )
             );
         }

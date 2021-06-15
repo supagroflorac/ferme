@@ -79,7 +79,7 @@ printf("\nUpdate WikiAdmin email : \n");
 foreach($ferme->wikis as $wiki) {
     printf($wiki->name . " : ");
     try {
-        $wiki->setUserEmail('WikiAdmin', $wiki->infos['mail']);
+        $wiki->setUserEmail('WikiAdmin', $wiki->getInfos()['mail']);
     } catch (Exception $e) {
         printf("Error\n");
         continue;
