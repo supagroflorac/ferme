@@ -63,6 +63,10 @@ class Database
         foreach ($queryResult as $line) {
             $columnOutput = "";
             foreach ($line as $columnValue) {
+                if ($columnValue === null) {
+                    $columnOutput .= "'',";
+                    continue;
+                }
                 $columnOutput .= "'{$this->prepareData($columnValue)}',";
             }
             $lineOutput .= "({$this->removeLastComma($columnOutput)}),";
