@@ -44,7 +44,7 @@ class Wiki implements InterfaceObject
 
     public function getDiskUsage(): int
     {
-        $file = new File($this->path . '/files');
+        $file = new File("{$this->path}/");
         return $file->diskUsage();
     }
 
