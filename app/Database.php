@@ -15,7 +15,7 @@ class Database
 
     public function export(string $file, string $prefix = "")
     {
-        $tableList = $this->getTableList($prefix);
+        $tableList = $this->getTablesListByPrefix($prefix);
 
         $output = "";
         foreach ($tableList as $table) {
@@ -35,6 +35,35 @@ class Database
         $content = file_get_contents($sqlFile);
         $sth = $this->dbConnexion->prepare($content);
         $sth->execute();
+    }
+
+    public function copyTable(string $srcTableName, string $destTableName)
+    {
+        $query = "CREATE TABLE IF NOT EXISTS {$destTableName} LIKE {$srcTableName}; 
+            INSERT INTO {$destTableName} SELECT * FROM {$srcTableName}";
+        $sth = $this->dbConnexion->prepare($query);
+        $sth->execute();
+    }
+
+    public function getTablesListByPrefix(string $prefix): array
+    {
+        // Echape les caractères '_' et '%'
+        $search = array('%', '_');
+        $replace = array('\%', '\_');
+        $pattern = str_replace($search, $replace, $prefix) . '%';
+
+        $query = "SHOW TABLES LIKE ?";
+        $sth = $this->dbConnexion->prepare($query);
+        $sth->execute(array($pattern));
+
+        $results = $sth->fetchAll();
+
+        $finalResults = array();
+        foreach ($results as $value) {
+            $finalResults[] = $value[0];
+        }
+
+        return $finalResults;
     }
 
     private function getCreateTable(string $tableName): string
@@ -75,26 +104,6 @@ class Database
             . "UNLOCK TABLES;\n\n";
 
         return $output;
-    }
-
-
-    private function getTableList(string $prefix): array
-    {
-        // Echappe les caractère % et _
-        $prefix = str_replace(array('%', '_'), array('\%', '\_'), $prefix);
-
-        $tableList = array();
-        $query = "SHOW TABLES LIKE ?";
-        $sth = $this->dbConnexion->prepare($query);
-        $sth->execute(array($prefix . '%'));
-
-        $result = $sth->fetchAll();
-
-        foreach ($result as $value) {
-            $tableList[$value[0]] = $value[0];
-        }
-
-        return $tableList;
     }
 
     private function prepareData(string $data): string

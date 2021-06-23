@@ -6,34 +6,25 @@ use Ferme\Collection;
 use Ferme\Configuration;
 use Ferme\Wiki\WikiFactory;
 use RecursiveDirectoryIterator;
+use PDO;
 
 class WikisCollection extends Collection
 {
     private $config;
     private $dbConnexion = null;
 
-    /**
-     * Initialise la classe (appelé par le constructeur)
-     * @param  array  args['config'] Instance de Configuration (Obligatoire)
-     */
-    public function __construct(Configuration $config, $dbConnexion)
+    public function __construct(Configuration $config, PDO $dbConnexion)
     {
         parent::__construct();
         $this->config = $config;
         $this->dbConnexion = $dbConnexion;
     }
 
-    /**
-     * Charge la liste des Wikis et leurs informations.
-     * @param  boolean $calculate_size Si vrai calcule la taille de la base de
-     * donnée et l'espace occupé sur le disque.
-     */
     public function load()
     {
-        $fermePath = $this->config['ferme_path'];
         $wikiFactory = new WikiFactory($this->config, $this->dbConnexion);
         $wikisList = new RecursiveDirectoryIterator(
-            $fermePath,
+            $this->config['ferme_path'],
             RecursiveDirectoryIterator::SKIP_DOTS
         );
 
@@ -41,11 +32,20 @@ class WikisCollection extends Collection
             if (!is_dir($wikiPath)) {
                 continue;
             }
-            $wikiName = basename($wikiPath);
-            $wiki = $wikiFactory->loadWikiFromExisting($wikiName);
-            if (!$wiki->loadConfiguration()) {
+
+            if (!is_file("{$wikiPath}/wakka.config.php")) {
                 continue;
             }
+
+            $wikiName = basename($wikiPath);
+            
+            try {
+                $wiki = $wikiFactory->loadWikiFromExisting($wikiName);
+            } catch (Exception $e) {
+                printf("Error on {$wikiName}\n");
+                continue;
+            }
+
             $this->add(
                 $wikiName,
                 $wikiFactory->loadWikiFromExisting($wikiName)

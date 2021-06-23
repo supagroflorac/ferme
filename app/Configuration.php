@@ -3,26 +3,20 @@
 namespace Ferme;
 
 use ArrayAccess;
+use Exception;
 
 class Configuration implements ArrayAccess
 {
-    private array $config = array();
+    protected string $arrayName = "\$this->config";
+    protected array $config = array();
 
-    public function __construct($file)
+    public function __construct(string $file)
     {
-        if (is_file($file)) {
-            include $file;
+        if ($this->isFileExist === false) {
+            throw new \Exception("{$file} is not a file.");
         }
 
-        if (isset($wakkaConfig)) {
-            $this->config = $wakkaConfig;
-            return;
-        }
-
-        if (isset($config)) {
-            $this->config = $config;
-            return;
-        }
+        $this->loadFile($file);
     }
 
     public function offsetSet($offset, $value)
@@ -49,14 +43,29 @@ class Configuration implements ArrayAccess
         return isset($this->config[$offset]) ? $this->config[$offset] : null;
     }
 
-    public function write(string $file, string $arrayName = "wakkaConfig")
+    public function write(string $file)
     {
         $content = "<?php\n\n";
-        $content .= "\${$arrayName} = array(\n";
+        $content .= "{$this->arrayName} = array(\n";
         foreach ($this->config as $key => $value) {
             $content .= "  \"{$key}\" => \"{$value}\",\n";
         }
         $content .= ");\n";
         file_put_contents($file, $content);
+    }
+
+    protected function loadFile($file)
+    {
+        include $file;
+
+        if (empty($this->config)) {
+            throw new Exception("{$file} is not a configuration file.");
+            return;
+        }
+    }
+
+    protected function isFileExist($file): bool
+    {
+        return is_file($file);
     }
 }

@@ -29,8 +29,8 @@ try {
     $ferme = new Ferme($config);
     $ferme->checkInstallation();
 } catch (Exception $e) {
-    print('Erreur fatale (problème de configuration ?)\n');
-    print($e->getMessage());
+    print("Erreur fatale (problème de configuration ?)\n");
+    print("{$e->getMessage()}\n");
     exit(1);
 }
 

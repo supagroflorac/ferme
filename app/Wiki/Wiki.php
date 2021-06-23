@@ -3,7 +3,7 @@
 namespace Ferme\Wiki;
 
 use Ferme\InterfaceObject;
-use Ferme\Configuration;
+use Ferme\Configuration as FermeConfiguration;
 use Ferme\Database;
 use Files\File;
 use PDO;
@@ -12,34 +12,28 @@ use Exception;
 use ZipArchive;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use Ferme\Wiki\Configuration as WikiConfiguration;
+use Ferme\Wiki\Informations;
 
 class Wiki implements InterfaceObject
 {
-    public $path;
-    public $name;
-    private $fermeConfig;
-    public $dbConnexion;
-    private $infos = null;
-    private $config = null;
+    public string $path;
+    public string $name;
+    private FermeConfiguration $fermeConfig;
+    public PDO $dbConnexion;
+    private Informations $infos;
+    public WikiConfiguration $config;
 
-    public function __construct(string $name, string $path, Configuration $fermeConfig, PDO $dbConnexion)
+    private $cachedInfos = array();
+
+    public function __construct(string $name, string $path, FermeConfiguration $fermeConfig, PDO $dbConnexion)
     {
         $this->name = $name;
         $this->path = $path;
         $this->fermeConfig = $fermeConfig;
         $this->dbConnexion = $dbConnexion;
-    }
-
-    public function loadConfiguration()
-    {
-        if (is_null($this->config)) {
-            $filePath = $this->path . "wakka.config.php";
-            if (!file_exists($filePath)) {
-                return false;
-            }
-            $this->config = new Configuration($filePath);
-        }
-        return true;
+        $this->config = new WikiConfiguration("{$this->path}wakka.config.php");
+        $this->infos = new Informations("{$this->path}wakka.infos.php");
     }
 
     public function getDiskUsage(): int
@@ -62,38 +56,19 @@ class Wiki implements InterfaceObject
 
     public function getInfos(): array
     {
-        if (is_null($this->infos)) {
-            $this->reloadInfos();
+        if (empty($this->cachedInfos) === true) {
+            $this->cachedInfos = array(
+                'name' => $this->name,
+                'mail' => $this->infos['mail'],
+                'date' => $this->infos['date'],
+                'url' => $this->config['base_url'],
+                'description' => html_entity_decode($this->infos['description'], ENT_QUOTES, "UTF-8"),
+                'FilesDiskUsage' => $this->getDiskUsage(),
+                'Release' => $this->getRelease(),
+                'Version' => $this->getVersion(),
+            );
         }
-        return $this->infos;
-    }
-
-    private function reloadInfos()
-    {
-        $this->infos = $this->loadWakkaInfosFile();
-        $this->infos['name'] = $this->name;
-        $this->infos['url'] = $this->config['base_url'];
-        $this->infos['description'] = html_entity_decode($this->infos['description'], ENT_QUOTES, "UTF-8");
-        $this->infos['LasPageModificationDateTime'] = $this->getLasPageModificationDateTime();
-        $this->infos['FilesDiskUsage'] = $this->getDiskUsage();
-        $this->infos['Release'] = $this->getRelease();
-        $this->infos['Version'] = $this->getVersion();
-    }
-
-    private function loadWakkaInfosFile(): array
-    {
-        $wakkaInfos = array(
-            'mail' => 'nomail',
-            'description' => 'Pas de description.',
-            'date' => 0,
-        );
-
-        $filePath = $this->path . "wakka.infos.php";
-        if (file_exists($filePath)) {
-            include $filePath;
-        }
-        
-        return $wakkaInfos;
+        return $this->cachedInfos;  
     }
 
     public function delete()
@@ -112,7 +87,8 @@ class Wiki implements InterfaceObject
 
     private function deleteDB()
     {
-        $tables = $this->getDBTablesList();
+        $database = new Database($this->dbConnexion);
+        return $database->getTablesListByPrefix($this->config['table_prefix']);
 
         foreach ($tables as $tableName) {
             $sth = $this->dbConnexion->prepare("DROP TABLE IF EXISTS " . $tableName);
@@ -214,7 +190,7 @@ class Wiki implements InterfaceObject
 
     private function setReleaseFromPackage(string $srcPath)
     {
-        $this->loadConfiguration();
+        // TODO bof bof c'est sale. Ne devrait pas dépendre de la source d'installation.
         include_once "${srcPath}/includes/constants.php";
         $this->config['yeswiki_version'] = YESWIKI_VERSION;
         $this->config['yeswiki_release'] = YESWIKI_RELEASE;
@@ -345,32 +321,6 @@ class Wiki implements InterfaceObject
     public function isUtf8()
     {
         return isset($this->config['db_charset']) and $this->config['db_charset'] === "utf8mb4";
-    }
-
-    private function getDBTablesList(): array
-    {
-        $database = $this->dbConnexion;
-        // Echape le caractère '_' et '%'
-        $search = array('%', '_');
-        $replace = array('\%', '\_');
-        $tablePrefix = str_replace(
-            $search,
-            $replace,
-            $this->config['table_prefix']
-        ) . '%';
-
-        $query = "SHOW TABLES LIKE ?";
-        $sth = $database->prepare($query);
-        $sth->execute(array($tablePrefix));
-
-        $results = $sth->fetchAll();
-
-        $finalResults = array();
-        foreach ($results as $value) {
-            $finalResults[] = $value[0];
-        }
-
-        return $finalResults;
     }
 
     private function getGroupMembers(string $groupname): array

@@ -4,15 +4,18 @@ namespace Ferme\Wiki;
 
 use Ferme\Wiki\Wiki;
 use Exception;
+use PDO;
 use Files\File;
 use Ferme\Configuration;
+use Ferme\Archive;
+use Ferme\Database;
 
 class WikiFactory
 {
     private $fermeConfig;
     private $dbConnexion;
 
-    public function __construct($fermeConfig, $dbConnexion)
+    public function __construct($fermeConfig, PDO $dbConnexion)
     {
         $this->fermeConfig = $fermeConfig;
         $this->dbConnexion = $dbConnexion;
@@ -22,7 +25,6 @@ class WikiFactory
     {
         $wikiPath = $this->getWikiPath($name);
         $wiki = new Wiki($name, $wikiPath, $this->fermeConfig, $this->dbConnexion);
-        $wiki->loadConfiguration();
         return $wiki;
     }
 
@@ -34,13 +36,13 @@ class WikiFactory
         if (is_dir($wikiPath) || is_file($wikiPath)) {
             throw new Exception("Ce nom de wiki est déjà utilisé (${name})");
         }
-        $this->copyWikiFiles($wikiPath);
+        $this->copyFolder("packages/{$this->fermeConfig['source']}/", $wikiPath);
         $this->setupWiki($name, $mail);
         $this->writeWakkaInfo($wikiPath, $mail, $description);
         return $this->loadWikiFromExisting($name);
     }
 
-    public function createFromArchive($archive)
+    public function createFromArchive(Archive $archive)
     {
         $wikiName = $archive->restore(
             $this->fermeConfig['ferme_path'],
@@ -50,12 +52,29 @@ class WikiFactory
         return $this->loadWikiFromExisting($wikiName);
     }
 
+    public function copyWiki(Wiki $wikiToCopy, string $newWikiName): Wiki {
+        
+        $this->copyFolder($wikiToCopy->path, $this->getWikiPath($newWikiName));
+        $this->copyWikiDB("{$wikiToCopy->name}_", "{$newWikiName}_");
+
+        $copiedWiki = $this->loadWikiFromExisting($newWikiName);
+        $copiedWiki->config["table_prefix"] = "{$newWikiName}_";
+        $copiedWiki->config["base_url"] = $this->getWikiUrl($newWikiName);
+        $copiedWiki->config["meta_description"] = "{$newWikiName}";
+        $copiedWiki->config["wakka_name"] = "{$newWikiName}";
+
+        $copiedWiki->config->write("{$copiedWiki->path}/wakka.config.php");
+
+
+        return $copiedWiki;
+    }
+
     private function getWikiPath($name): string
     {
         return $this->fermeConfig['ferme_path'] . $name . "/";
     }
 
-    private function checkIfWikiInstallError($pageContent)
+    private function checkIfWikiInstallError(string $pageContent): bool
     {
         $errorString = "<span class=\"failed\">ECHEC</span>";
         if (strpos($pageContent, $errorString) !== false) {
@@ -64,7 +83,7 @@ class WikiFactory
         return false;
     }
 
-    private function deleteWikiFiles($wikiPath)
+    private function deleteWikiFiles(string $wikiPath)
     {
         $wikiFiles = new File($wikiPath);
         $wikiFiles->delete();
@@ -74,7 +93,7 @@ class WikiFactory
     {
         $file = "${wikiPath}wakka.infos.php";
 
-        $wakkaInfo = new Configuration($file);
+        $wakkaInfo = new FermeConfiguration($file);
 
         $wakkaInfo['mail'] = $mail;
         $wakkaInfo['description'] = $description;
@@ -85,9 +104,6 @@ class WikiFactory
 
     private function setupWiki($wikiName, $mail)
     {
-        $wikiUrl = $this->fermeConfig['base_url']
-            . $this->fermeConfig['ferme_path']
-            . "${wikiName}/?";
         $unusablePassword = password_hash("Bjarne et Stroustrup sont dans un bateau.", PASSWORD_DEFAULT);
         $postParameters = array(
             'config[default_language]' => 'fr',
@@ -104,7 +120,7 @@ class WikiFactory
             'admin_password' => $unusablePassword,
             'admin_password_conf' => $unusablePassword,
             'admin_email' => $mail,
-            'config[base_url]' => $wikiUrl,
+            'config[base_url]' => $this->getWikiUrl($wikiName),
             'config[rewrite_mode]' => '0',
             'config[allow_raw_html]' => '1',
         );
@@ -128,10 +144,26 @@ class WikiFactory
         curl_close($curlSession);
     }
 
-    private function copyWikiFiles($wikiPath)
+    private function getWikiUrl(string $wikiName):string
     {
-        $packagePath = "packages/" . $this->fermeConfig['source'] . "/";
-        $wikiSrcFiles = new File($packagePath);
-        $wikiSrcFiles->copy($wikiPath);
+        return "{$this->fermeConfig['base_url']}{$this->fermeConfig['ferme_path']}{$wikiName}/?";
+    }
+
+    private function copyFolder(string $srcPath, string $destPath)
+    {
+        $wikiSrcFiles = new File($srcPath);
+        $wikiSrcFiles->copy($destPath);
+    }
+
+    private function copyWikiDB(string $srcPrefix, string $destPrefix)
+    {
+        $database = new Database($this->dbConnexion);
+        $tablesList = $database->getTablesListByPrefix($srcPrefix);
+        
+        foreach ($tablesList as $tableName) {
+            $newTableName = str_replace($srcPrefix, $destPrefix, $tableName);
+            $database->copyTable($tableName, $newTableName);
+        }
+
     }
 }
