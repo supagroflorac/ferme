@@ -36,7 +36,13 @@ class Wiki implements InterfaceObject
 
     public function getDiskUsage(): int
     {
-        $file = new File("{$this->path}/");
+        $path = "{$this->path}/files/";
+
+        if (is_dir($path) === false) {
+            return 0;
+        }
+        
+        $file = new File($path);
         return $file->diskUsage();
     }
 
@@ -51,23 +57,6 @@ class Wiki implements InterfaceObject
 
         return new DateTime($result[0]['Update_time']);
     }
-
-    // public function getInfos(): array TODO
-    // {
-    //     if (empty($this->cachedInfos) === true) {
-    //         $this->cachedInfos = array(
-    //             'name' => $this->name,
-    //             'mail' => $this->infos['mail'],
-    //             'date' => $this->infos['date'],
-    //             'url' => $this->config['base_url'],
-    //             'description' => html_entity_decode($this->infos['description'], ENT_QUOTES, "UTF-8"),
-    //             'FilesDiskUsage' => $this->getDiskUsage(),
-    //             'Release' => $this->getRelease(),
-    //             'Version' => $this->getVersion(),
-    //         );
-    //     }
-    //     return $this->cachedInfos;  
-    // }
 
     public function delete()
     {
