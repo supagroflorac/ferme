@@ -97,15 +97,6 @@ abstract class TwigView extends View
         );
     }
 
-    protected function object2Infos(array $listObjects): array
-    {
-        $listInfos = array();
-        foreach ($listObjects as $name => $object) {
-            $listInfos[$name] = $object->getInfos();
-        }
-        return $listInfos;
-    }
-
     private function getThemePath(): string
     {
         return 'themes/' . $this->ferme->config['template'];

@@ -39,7 +39,7 @@ class ArchivesCollection extends Collection
                 $archive = $archiveFactory->createFromExisting(
                     basename($archivePath)
                 );
-                $archiveName = $archive->getInfos()['filename'];
+                $archiveName = $archive->filename;
                 $this->add($archiveName, $archive);
             }
         }

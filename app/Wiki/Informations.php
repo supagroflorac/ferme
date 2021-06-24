@@ -12,13 +12,17 @@ class Informations extends FermeConfiguration
 
     protected function loadFile($file)
     {
-        include $file;
-
-        if (isset($wakkaInfos) === false) {
-            throw new Exception("{$file} is not a wakka information file.");
+        
+        $this->config = array();
+        
+        if (is_file($file)) {
+            include $file;
+            
+            if (isset($wakkaInfos) === false) {
+                throw new Exception("{$file} is not a wakka information file.");
+            }
+            $this->config = $wakkaInfos;
         }
-
-        $this->config = $wakkaInfos;
 
         if (isset($this->config['mail']) === false) {
             $this->config['mail'] = 'nomail';
@@ -31,6 +35,5 @@ class Informations extends FermeConfiguration
         if (isset($this->config['date']) === false) {
             $this->config['date'] = 0;
         }
-    }
-    
+    }  
 }

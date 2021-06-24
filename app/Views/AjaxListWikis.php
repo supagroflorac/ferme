@@ -15,12 +15,19 @@ class AjaxListWikis extends TwigView
 
     protected function compileInfos(): array
     {
-        $infos = array();
-
-        $infos['list_wikis'] = $this->object2Infos(
-            $this->ferme->wikis->searchNoCaseType($this->filter)
+        $listInfos = array(
+            'list_wikis' => array(),
         );
+        
+        foreach ($this->ferme->wikis->searchNoCaseType($this->filter) as $wiki) {
+            $listInfos['list_wikis'][$wiki->name] = array(
+                'name' => $wiki->name,
+                'url' => $wiki->config['base_url'],
+                'date' => $wiki->infos['date'],
+                'description' => html_entity_decode($wiki->infos['description'], ENT_QUOTES, "UTF-8"),
+            );
+        }
 
-        return $infos;
+        return $listInfos;
     }
 }

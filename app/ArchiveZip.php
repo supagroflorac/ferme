@@ -12,7 +12,7 @@ class ArchiveZip extends Archive
 {
     public function restore(string $fermeFolder, string $archivesFolder, PDO $dbConnexion): string
     {
-        $name = $this->getInfos()['name'];
+        $name = $this->name;
         $sqlFile = "{$fermeFolder}/{$name}.sql";
         $archivePath = $archivesFolder . $this->filename;
 

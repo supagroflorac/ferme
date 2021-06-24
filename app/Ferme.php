@@ -83,7 +83,7 @@ class Ferme
 
         $archiveFactory = new ArchiveFactory($this->config);
         $archive = $archiveFactory->createFromWiki($this->wikis[$name]);
-        $archiveName = $archive->getInfos()['filename'];
+        $archiveName = $archive->filename;
         $this->archives->add($archiveName, $archive);
     }
 
@@ -99,7 +99,7 @@ class Ferme
     public function restore(string $name)
     {
         $archive = $this->archives[$name];
-        $wikiName = $archive->getInfos()['name'];
+        $wikiName = $archive->name;
 
         if ($this->wikis->exist($wikiName)) {
             throw new Exception("Un wiki de ce nom ($wikiName) existe déjà.");

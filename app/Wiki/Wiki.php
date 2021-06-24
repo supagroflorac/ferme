@@ -21,10 +21,8 @@ class Wiki implements InterfaceObject
     public string $name;
     private FermeConfiguration $fermeConfig;
     public PDO $dbConnexion;
-    private Informations $infos;
+    public Informations $infos;
     public WikiConfiguration $config;
-
-    private $cachedInfos = array();
 
     public function __construct(string $name, string $path, FermeConfiguration $fermeConfig, PDO $dbConnexion)
     {
@@ -54,22 +52,22 @@ class Wiki implements InterfaceObject
         return new DateTime($result[0]['Update_time']);
     }
 
-    public function getInfos(): array
-    {
-        if (empty($this->cachedInfos) === true) {
-            $this->cachedInfos = array(
-                'name' => $this->name,
-                'mail' => $this->infos['mail'],
-                'date' => $this->infos['date'],
-                'url' => $this->config['base_url'],
-                'description' => html_entity_decode($this->infos['description'], ENT_QUOTES, "UTF-8"),
-                'FilesDiskUsage' => $this->getDiskUsage(),
-                'Release' => $this->getRelease(),
-                'Version' => $this->getVersion(),
-            );
-        }
-        return $this->cachedInfos;  
-    }
+    // public function getInfos(): array TODO
+    // {
+    //     if (empty($this->cachedInfos) === true) {
+    //         $this->cachedInfos = array(
+    //             'name' => $this->name,
+    //             'mail' => $this->infos['mail'],
+    //             'date' => $this->infos['date'],
+    //             'url' => $this->config['base_url'],
+    //             'description' => html_entity_decode($this->infos['description'], ENT_QUOTES, "UTF-8"),
+    //             'FilesDiskUsage' => $this->getDiskUsage(),
+    //             'Release' => $this->getRelease(),
+    //             'Version' => $this->getVersion(),
+    //         );
+    //     }
+    //     return $this->cachedInfos;  
+    // }
 
     public function delete()
     {

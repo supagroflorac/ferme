@@ -6,14 +6,32 @@ class Home extends TwigView
 {
     protected function compileInfos(): array
     {
-        return array(
+        $infos = array(
             'wiki_name' => $this->getInputPostVarOrEmpty('wiki_name'),
             'description' => $this->getInputPostVarOrEmpty('description'),
             'mail' => $this->getInputPostVarOrEmpty('mail'),
-            'list_wikis' => $this->object2Infos($this->ferme->wikis->search()),
             'hashcash_url' => $this->HashCash(),
             'welcome_text' => $this->ferme->config['welcome_text'],
         );
+
+        $infos['list_wikis'] = $this->extractWikisInfo();
+
+        return $infos;
+    }
+    
+    private function extractWikisInfo(): array
+    {
+        $listInfos = array();
+        
+        foreach ($this->ferme->wikis->search() as $wiki) {
+            $listInfos[$wiki->name] = array(
+                'name' => $wiki->name,
+                'url' => $wiki->config['base_url'],
+                'date' => $wiki->infos['date'],
+                'description' => html_entity_decode($wiki->infos['description'], ENT_QUOTES, "UTF-8"),
+            );
+        }
+        return $listInfos;
     }
 
     private function getInputPostVarOrEmpty(string $varname): string

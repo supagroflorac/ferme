@@ -3,47 +3,53 @@
 namespace Ferme;
 
 use Exception;
-use Ferme\Configuration;
+use Ferme\Configuration as FermeConfiguration;
 
 class Archive implements InterfaceObject
 {
     public string $filename;
-    private Configuration $config;
+    public string $name;
+    public string $url;
+    public int $creationDate;
 
-    public function __construct(string $filename, Configuration $config)
+    private FermeConfiguration $fermeConfig;
+    
+    public function __construct(string $filename, FermeConfiguration $fermeConfig)
     {
         $this->filename = $filename;
-        $this->config = $config;
+        $this->fermeConfig = $fermeConfig;
+        $this->name = $this->getName($filename);
+        $this->url = $this->getUrl($filename);
+        $this->creationDate = $this->getCreationDate($filename);
     }
-
-    public function getInfos(): array
+    
+    public function delete()
     {
-        return array(
-            'name' => substr($this->filename, 0, -16),
-            'filename' => $this->filename,
-            'date' => $this->readCreationDateFromFilename(),
-            'url' => $this->getArchiveURL(),
-            'size' => $this->getArchiveWeight(),
-        );
+        if (unlink($this->fermeConfig['archives_path'] . $this->filename) === false) {
+            throw new Exception('Impossible de supprimer l\'archive', 1);
+        }
     }
-
-    public function getArchiveURL(): string
+    
+    public function size()
     {
-        $name = substr($this->filename, 0, -4);
+        return filesize($this->fermeConfig['archives_path'] . $this->filename);
+    }
+    
+    private function getURL(string $filename): string
+    {
+        $name = substr($filename, 0, -4);
         $url = '?download=' . $name;
         return $url;
     }
 
-    public function delete()
+    private function getName(string $filename): string
     {
-        if (unlink($this->config['archives_path'] . $this->filename) === false) {
-            throw new Exception('Impossible de supprimer l\'archive', 1);
-        }
+        return substr($this->filename, 0, -16);
     }
 
-    private function readCreationDateFromFilename(): int
+    private function getCreationDate(string $filename): int
     {
-        $strDate = substr($this->filename, -16, 12);
+        $strDate = substr($filename, -16, 12);
         return mktime(
             (int) substr($strDate, 8, 2),
             (int) substr($strDate, 10, 2),
@@ -52,10 +58,5 @@ class Archive implements InterfaceObject
             (int) substr($strDate, 6, 2),
             (int) substr($strDate, 0, 4),
         );
-    }
-
-    private function getArchiveWeight()
-    {
-        return filesize($this->config['archives_path'] . $this->filename);
     }
 }

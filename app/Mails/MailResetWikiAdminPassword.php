@@ -15,11 +15,10 @@ class MailResetWikiAdminPassword extends Mail
 
     protected function getData(): array
     {
-        $wikiInfos = $this->wiki->getInfos();
         return array(
             'name' => $this->wiki->name,
-            'url' => $wikiInfos['url'],
-            'to' => $wikiInfos['mail'],
+            'url' => $this->wiki->infos['url'],
+            'to' => $this->wiki->infos['mail'],
             'from' => $this->config['mail_from'],
             'subject' => "Mot de passe du wiki {$this->wiki->name}",
             'wikiAdminPassword' => $this->wikiAdminPassword,

@@ -6,7 +6,8 @@ use Ferme\Wiki\Wiki;
 use Exception;
 use PDO;
 use Files\File;
-use Ferme\Configuration;
+use Ferme\Configuration as FermeConfiguration;
+use Ferme\Wiki\Information;
 use Ferme\Archive;
 use Ferme\Database;
 
@@ -15,7 +16,7 @@ class WikiFactory
     private $fermeConfig;
     private $dbConnexion;
 
-    public function __construct($fermeConfig, PDO $dbConnexion)
+    public function __construct(FermeConfiguration $fermeConfig, PDO $dbConnexion)
     {
         $this->fermeConfig = $fermeConfig;
         $this->dbConnexion = $dbConnexion;
@@ -69,15 +70,15 @@ class WikiFactory
         return $copiedWiki;
     }
 
-    private function getWikiPath($name): string
+    private function getWikiPath(string $name): string
     {
-        return $this->fermeConfig['ferme_path'] . $name . "/";
+        return "{$this->fermeConfig['ferme_path']}{$name}/";
     }
 
     private function checkIfWikiInstallError(string $pageContent): bool
     {
         $errorString = "<span class=\"failed\">ECHEC</span>";
-        if (strpos($pageContent, $errorString) !== false) {
+        if (strpos($pageContent, $errorString) === true) {
             return true;
         }
         return false;
@@ -92,8 +93,7 @@ class WikiFactory
     private function writeWakkaInfo($wikiPath, $mail, $description)
     {
         $file = "${wikiPath}wakka.infos.php";
-
-        $wakkaInfo = new FermeConfiguration($file);
+        $wakkaInfo = new Informations($file);
 
         $wakkaInfo['mail'] = $mail;
         $wakkaInfo['description'] = $description;
@@ -125,12 +125,13 @@ class WikiFactory
             'config[allow_raw_html]' => '1',
         );
 
-        $curlSession = curl_init("${wikiUrl}PagePrincipale&installAction=install");
+        $curlSession = curl_init("{$this->getWikiUrl($wikiName)}PagePrincipale&installAction=install");
         curl_setopt($curlSession, CURLOPT_POST, true);
         curl_setopt($curlSession, CURLOPT_POSTFIELDS, http_build_query($postParameters));
         curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
 
         $curlOutput = curl_exec($curlSession);
+
 
         if (
             $curlOutput === false

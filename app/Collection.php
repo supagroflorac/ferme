@@ -91,25 +91,10 @@ abstract class Collection implements ArrayAccess, Iterator, Countable
         return next($this->list);
     }
 
-    /**
-     * Renvois un wiki ou un tableau de wiki dont le nom contient la
-     * chaine recherchée
-     * @todo  Améliorer les fonctions de recherche
-     * @param  string $args nom d'un wiki ou '*' pour les avoir tous
-     * @return array       liste des wikis correspondant a la recherche
-     */
-    public function search($string = '*')
+    public function search(string $string = '*'): array
     {
-        if (!is_string($string)) {
-            return array();
-        }
-
         if ($string === '*' or $string === '') {
             return $this->list;
-        }
-
-        if ($this->offsetExists($string)) {
-            return array($this->list[$string]);
         }
 
         $selected = array();
@@ -122,24 +107,10 @@ abstract class Collection implements ArrayAccess, Iterator, Countable
         return $selected;
     }
 
-    /** Renvois un wiki ou un tableau de wiki dont le nom contient la chaine
-     * recherchée sans prendre en compte la casse.
-     * @todo  Améliorer les fonctions de recherche
-     * @param  string $args nom d'un wiki ou '*' pour les avoir tous
-     * @return array       liste des wikis correspondant a la recherche
-     */
-    public function searchNoCaseType($string = '*')
+    public function searchNoCaseType(string $string = '*'): array
     {
-        if (!is_string($string)) {
-            return array();
-        }
-
         if ($string === '*' or $string === '') {
             return $this->list;
-        }
-
-        if ($this->offsetExists($string)) {
-            return array($this->list[$string]);
         }
 
         $selected = array();
