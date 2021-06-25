@@ -43,14 +43,14 @@ class Mv extends Action
             );
             $this->ferme->wikis->add($newWikiName, $newWiki);
         } catch (Exception $e) {
-            printf("Error durant la copie de {$wikiToRename} vers {$newWikiName} : {$e->getMessage()}\n");
+            printf("Error copying {$wikiToRename} to {$newWikiName} : {$e->getMessage()}\n");
             return;
         }
 
         try {
             $this->ferme->delete($wikiToRename);
         } catch (Exception $e) {
-            printf("Error durant la suppression de {$wikiToRename} : {$e->getMessage()}\n");
+            printf("Error removing {$wikiToRename} : {$e->getMessage()}\n");
             return;
         }
     }
