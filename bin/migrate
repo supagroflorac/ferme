@@ -5,7 +5,8 @@ namespace Ferme;
 
 use Exception;
 use Ferme\Ferme;
-use Ferme\Configuration;
+use Ferme\Configuration as FermeConfiguration;
+use Ferme\Wiki\Configuration as WikiConfiguration;
 use Ferme\Password;
 use Ferme\Mails\MailResetWikiAdminPassword;
 
@@ -26,7 +27,7 @@ if (!is_file(__DIR__ . '/../ferme.config.php')) {
         1
     );
 }
-$fermeConfig = new Configuration(__DIR__ . '/../ferme.config.php');
+$fermeConfig = new FermeConfiguration(__DIR__ . '/../ferme.config.php');
 
 try {
     $ferme = new Ferme($fermeConfig);
@@ -79,7 +80,7 @@ printf("\nUpdate WikiAdmin email : \n");
 foreach($ferme->wikis as $wiki) {
     printf($wiki->name . " : ");
     try {
-        $wiki->setUserEmail('WikiAdmin', $wiki->getInfos()['mail']);
+        $wiki->setUserEmail('WikiAdmin', $wiki->infos['mail']);
     } catch (Exception $e) {
         printf("Error\n");
         continue;
@@ -92,7 +93,7 @@ foreach($ferme->wikis as $wiki) {
     $wikiName = $wiki->name;
     printf("${wikiName} : ");
     $wakkaConfigFile = "wikis/${wikiName}/wakka.config.php";
-    $wikiConf = new Configuration($wakkaConfigFile);
+    $wikiConf = new WikiConfiguration($wakkaConfigFile);
     $wikiConf['base_url'] = $fermeConfig['base_url'] . "wikis/${wikiName}/?";
     $wikiConf->write($wakkaConfigFile);
     printf("OK\n");
@@ -103,7 +104,7 @@ foreach($ferme->wikis as $wiki) {
     printf("${wikiName} : ");
     $wikiName = $wiki->name;
     $wakkaConfigFile = "wikis/${wikiName}/wakka.config.php";
-    $wikiConf = new Configuration($wakkaConfigFile);
+    $wikiConf = new WikiConfiguration($wakkaConfigFile);
     $changed = false;
     
     if (isset($wikiConf['favorite_theme'])) {
@@ -133,14 +134,12 @@ foreach($ferme->wikis as $wiki) {
         printf("Updated\n");
         continue;
     }
-    printf("OK\n");
 }
 
 // Update db to UTF8
 printf("\nConvert to UTF8 : \n");
 foreach($ferme->wikis as $wiki) {
     if ($wiki->isUtf8()) {
-        printf("Already UTF8\n");
         continue;
     }
 
@@ -152,4 +151,12 @@ foreach($ferme->wikis as $wiki) {
         continue;
     }
     printf("Converted\n");
+}
+
+printf("\nUpdate robots.txt\n");
+foreach($ferme->wikis as $wiki) {
+    $command = "cp robots.txt {$ferme->config['ferme_path']}/{$wiki->name}/}";
+    if (exec($command) === false) {
+        printf("{$wiki->name} : Error\n");
+    }
 }

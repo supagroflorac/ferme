@@ -5,7 +5,7 @@ SHELL := bash
 
 PACKAGE_DIR := packages
 YESWIKI_VERSION := cercopitheque
-YESWIKI_RELEASE := 2021-05-10-1
+YESWIKI_RELEASE := 2021-06-16-1
 YESWIKI_ZIPFILE := https://repository.yeswiki.net/${YESWIKI_VERSION}/yeswiki-${YESWIKI_VERSION}-${YESWIKI_RELEASE}.zip
 TMP_FILE := /tmp/yeswiki-${YESWIKI_VERSION}-${YESWIKI_RELEASE}.zip
 PACKAGE_FILES_TO_REMOVE := $(shell cat .package_cleaning)
@@ -32,7 +32,8 @@ build-package:
 	@for file in ${PACKAGE_FILES_TO_REMOVE}; do \
 		rm -rf ${PACKAGE_DIR}/${YESWIKI_VERSION}/$$file; \
 	done
-	@printf "patching YesWiki (Cookies)"
+	@printf "Setup robots.txt...\n"
+	@cp "robots.txt"  ${PACKAGE_DIR}/${YESWIKI_VERSION}/
 
 clean:
 	@printf "Deleting package...\n"
