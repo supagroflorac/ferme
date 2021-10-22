@@ -6,7 +6,7 @@ use Ferme\Wiki\WikiFactory;
 
 class Cp extends Action
 {
-    public const DESCRIPTION = "List wikis.";
+    public const DESCRIPTION = "Copy a wiki.";
 
     public function execute()
     {
