@@ -101,8 +101,7 @@ foreach($ferme->wikis as $wiki) {
 
 printf("\nRemove themes parameters : \n");
 foreach($ferme->wikis as $wiki) {
-    printf("${wikiName} : ");
-    $wikiName = $wiki->name;
+    printf("${$wiki->name} : ");
     $wakkaConfigFile = "wikis/${wikiName}/wakka.config.php";
     $wikiConf = new WikiConfiguration($wakkaConfigFile);
     $changed = false;
@@ -122,16 +121,18 @@ foreach($ferme->wikis as $wiki) {
         $changed = true;
     }
 
-    $wikiConf['base_url'] = $fermeConfig['base_url'] . "wikis/${wikiName}/?";
+    // TODO : Force themes for all wiki
+
+    $wikiConf['base_url'] = $fermeConfig['base_url'] . "wikis/${$wiki->name}/?";
     try {
         $wikiConf->write($wakkaConfigFile);
     } catch (Exception $e) {
-        printf("Error\n");
+        printf("{$wiki->name} : Error\n");
         continue;
     }
 
     if ($changed) {
-        printf("Updated\n");
+        printf("{$wiki->name} : Updated\n");
         continue;
     }
 }
